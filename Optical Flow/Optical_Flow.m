@@ -4,21 +4,23 @@
 
 
 % Specify the folder where the files live.
-myFolder = 'C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\toyProblem_F22';
+
+%myFolder = 'C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\toyProblem_F22';
+
 % Check to make sure that folder actually exists. Warn user if it doesn't.
-if ~isfolder(myFolder)
-    errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', myFolder);
-    uiwait(warndlg(errorMessage));
-    myFolder = uigetdir(); % Ask for a new one.
-    if myFolder == 0
-        % User clicked Cancel
-        return;
-    end
-end
+% if ~isfolder(myFolder)
+%     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', myFolder);
+%     uiwait(warndlg(errorMessage));
+%     myFolder = uigetdir(); % Ask for a new one.
+%     if myFolder == 0
+%         % User clicked Cancel
+%         return;
+%     end
+% end
 
 
 
-v = VideoReader("C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\IMG_6726(2).mov");
+v = VideoReader("C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\480438402_9177595782357945_2907558958716371077_n.mp4");
 frame = readFrame(v);
 
 
@@ -31,24 +33,30 @@ frame = readFrame(v);
 % 
 % 
 % % Get a list of all files in the folder with the desired file name pattern.
- filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
+%filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- theFiles = dir(filePattern);
-% 
- baseFileName = theFiles(1).name;
- fullFileName = fullfile(theFiles(1).folder, baseFileName);
+%  theFiles = dir(filePattern);
+% % 
+%  baseFileName = theFiles(1).name;
+%  fullFileName = fullfile(theFiles(1).folder, baseFileName);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % %fprintf(1, 'Now reading %s\n', fullFileName);
 % % Now do whatever you want with this file name,
 % % such as reading it in as an image array with imread()
-imageArray = imread(fullFileName);
+% imageArray = imread(fullFileName);
+% imageArray = rgb2gray(imageArray);
+
+
+
+imageArray = frame;
 imageArray = rgb2gray(imageArray);
 
+
 sizing = size(imageArray);
-sizing(1,3) =  length(theFiles);
+sizing(1,3) =  v.NumFrames -1 ;
 
 D3matrixarray = zeros(sizing,"double");
 % D3_X_matrixarray = zeros(sizing(1),sizing(2)-1,sizing(3),"double");
@@ -60,14 +68,19 @@ D3matrixarray = zeros(sizing,"double");
 % dtotal_Vt_filtered = zeros(sizing(1),sizing(2),sizing(3), "double");
 GGF3 = zeros(sizing(1),sizing(2),sizing(3), "double");
 
-for k = 1 : length(theFiles)
-    baseFileName = theFiles(k).name;
-    fullFileName = fullfile(theFiles(k).folder, baseFileName);
-    %fprintf(1, 'Now reading %s\n', fullFileName);
-    % Now do whatever you want with this file name,
-    % such as reading it in as an image array with imread()
-    imageArray = imread(fullFileName);
-    imageArray = double(imageArray)./256.0;
+%for k = 1 : length(theFiles)
+for k = 1 : v.NumFrames -1
+    frame = readFrame(v);
+
+
+    % baseFileName = theFiles(k).name;
+    % fullFileName = fullfile(theFiles(k).folder, baseFileName);
+    % %fprintf(1, 'Now reading %s\n', fullFileName);
+    % % Now do whatever you want with this file name,
+    % % such as reading it in as an image array with imread()
+    % imageArray = imread(fullFileName);
+
+    imageArray = double(frame)./256.0;
     imageArray = rgb2gray(imageArray);
 
     % 3-d matrix is created
@@ -151,7 +164,7 @@ end
 
 u = size(GGFZ3(:,:,k));
 v = size(GGFY3(:,:,k));
-LKrange = 10; % set size of neighbors
+LKrange = 50; % set size of neighbors
     
 for z =  1:sizing(1,3)
     for n = 1+LKrange:LKrange: sizing(1,1)-LKrange
@@ -181,18 +194,19 @@ for z =  1:sizing(1,3)
     X_deci = X(1:v_space:end, 1:v_space:end);
     Y_deci = Y(1:v_space:end, 1:v_space:end);
 
-    if size(u_deci) > size(X_deci)
-        u_deci(:,1) = [];
-        v_deci(1,:) = [];
-        u_deci(1,:) = [];
-        v_deci(:,1) = [];
-    elseif size(X_deci) > size(u_deci)
-        X_deci(:,1) = [];
-        X_deci(1,:) = [];
-        Y_deci(1,:) = [];
-        Y_deci(:,1) = [];
+    while (~isequal(size(u_deci), size(X_deci)) || ~isequal(size(v_deci), size(Y_deci)))
+        if size(u_deci) > size(X_deci)
+            u_deci(:,1) = [];
+            v_deci(1,:) = [];
+            u_deci(1,:) = [];
+            v_deci(:,1) = [];
+        elseif size(X_deci) > size(u_deci)
+            X_deci(:,1) = [];
+            X_deci(1,:) = [];
+            Y_deci(1,:) = [];
+            Y_deci(:,1) = [];
+        end
     end
-
     %% Plot optical flow field
     imshow(D3matrixarray(:,:,z));
     hold on;
