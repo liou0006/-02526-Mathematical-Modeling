@@ -4,7 +4,7 @@
 
 
 % Specify the folder where the files live.
-myFolder = 'C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\timelapse(1)';
+myFolder = 'C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\toyProblem_F22';
 % Check to make sure that folder actually exists. Warn user if it doesn't.
 if ~isfolder(myFolder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', myFolder);
@@ -16,35 +16,34 @@ if ~isfolder(myFolder)
     end
 end
 
+
+
+v = VideoReader("C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\IMG_6726(2).mov");
+frame = readFrame(v);
+
+
+
+
+
+
+
+
 % 
 % 
-% videofile = handles.videofile;
-% scanrate = handles.scanrate;
-% frame_rate = handles.frame_rate;
-% Time = handles.Time;
-% Chamber_P = handles.Chamber_P;
-% TimeScale = scanrate/frame_rate;
-% handles.TimeScale = TimeScale;
+% % Get a list of all files in the folder with the desired file name pattern.
+ filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ theFiles = dir(filePattern);
 % 
-% 
-% 
+ baseFileName = theFiles(1).name;
+ fullFileName = fullfile(theFiles(1).folder, baseFileName);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-
-
-
-
-
-% Get a list of all files in the folder with the desired file name pattern.
-filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
-theFiles = dir(filePattern);
-
-baseFileName = theFiles(1).name;
-fullFileName = fullfile(theFiles(1).folder, baseFileName);
-%fprintf(1, 'Now reading %s\n', fullFileName);
-% Now do whatever you want with this file name,
-% such as reading it in as an image array with imread()
+% %fprintf(1, 'Now reading %s\n', fullFileName);
+% % Now do whatever you want with this file name,
+% % such as reading it in as an image array with imread()
 imageArray = imread(fullFileName);
 imageArray = rgb2gray(imageArray);
 
@@ -131,18 +130,18 @@ GGFZ3 = zeros(sizing(1),sizing(2),sizing(3));
 GGFX3 = zeros(sizing(1),sizing(2),sizing(3));
 GGFY3 = zeros(sizing(1),sizing(2),sizing(3));
 
-for k = 1:sizing(1) % applies gradient to X and Y planes
-        GGFX3(k,:,:) =  imfilter(D3matrixarray(k,:,:),dG);
-end
-for k = 1:sizing(2) % applies gradient to X and Y planes
-        GGFY3(:,k,:) =  imfilter(D3matrixarray(:,k,:),dG.');
-end
+%for k = 1:sizing(1) % applies gradient to X and Y planes
+        GGFX3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG);
+%end
+%for k = 1:sizing(2) % applies gradient to X and Y planes
+        GGFY3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG.');
+%end
 %volumeViewer(GGFX3);
 %volumeViewer(GGFY3);
 % gradient for Vt
-for k = 1:sizing(1,1) % applies gradient to T plane
+%for k = 1:sizing(1,1) % applies gradient to T plane
     GGFZ3(:,:,:) =  imfilter(D3matrixarray(:,:,:),Gz);
-end
+%end
 %volumeViewer(GGFZ3) %displays 3d matrix
 for k = 1:sizing(1,3)
     %imshow(GGFZ3(:,:,k));
@@ -152,7 +151,7 @@ end
 
 u = size(GGFZ3(:,:,k));
 v = size(GGFY3(:,:,k));
-LKrange = 100; % set size of neighbors
+LKrange = 10; % set size of neighbors
     
 for z =  1:sizing(1,3)
     for n = 1+LKrange:LKrange: sizing(1,1)-LKrange
@@ -178,7 +177,7 @@ for z =  1:sizing(1,3)
     u_deci = u(1:v_space:end, 1:v_space:end);
     v_deci = v(1:v_space:end, 1:v_space:end);
     % get coordinate for u and v in the original frame
-    [X,Y] = meshgrid(1+v_space:sizing(1,1)-v_space, 1+v_space:sizing(1,2)-v_space);
+    [X,Y] = meshgrid(1+v_space : sizing(1,1)-v_space , 1+v_space : sizing(1,2)-v_space);
     X_deci = X(1:v_space:end, 1:v_space:end);
     Y_deci = Y(1:v_space:end, 1:v_space:end);
 
@@ -201,8 +200,8 @@ for z =  1:sizing(1,3)
     v_deci(1,1) = 0;
 
     % draw the velocity vectors
-    quiver(X_deci, Y_deci, u_deci,v_deci , 'r' )
-    pause(1);
+    quiver(Y_deci, X_deci, u_deci,v_deci , 'r' )
+    pause(0);
 end
 
 
