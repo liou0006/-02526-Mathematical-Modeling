@@ -1,6 +1,9 @@
 %open folder and files
 
-
+% Define video settings
+video = VideoWriter('output_video.avi');  % Create video object
+%v.FrameRate = 10;  % Set frame rate
+open(video);  % Open video file
 
 
 % Specify the folder where the files live.
@@ -20,7 +23,7 @@
 
 
 
-v = VideoReader("C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\480438402_9177595782357945_2907558958716371077_n.mp4");
+v = VideoReader("C:\Users\niels\Downloads\480632189_28483080964671504_9196779645610595176_n.mp4");
 frame = readFrame(v);
 
 
@@ -215,7 +218,11 @@ for z =  1:sizing(1,3)
 
     % draw the velocity vectors
     quiver(Y_deci, X_deci, u_deci,v_deci , 'r' )
-    pause(0);
+    hold off
+    frame = getframe(gcf);  % Capture figure as a frame
+    writeVideo(video, frame);  % Write frame to video
+    %pause(0);
 end
+close(video);
 
 
