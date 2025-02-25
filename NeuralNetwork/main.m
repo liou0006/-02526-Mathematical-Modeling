@@ -1,13 +1,12 @@
 
 T = readtable("Libian_desert_data.csv");
 
-% T([10000:240000],:) = [];
-
 rotatedImage = rotate_image(T,45);
-% 
-% biasedimage = apply_bias(30,10);
-% 
-% foldedimage = biasedImage;
+
+bias =  10;  % Change Bias here
+biasedimage = apply_bias(rotatedImage,bias);  % applying bias
+
+foldedimage = apply_activation(biasedimage,'ab');
 % foldedimage(1,:) = -foldedimage(1,:);
 % 
 % saveas(foldedimage)

@@ -1,12 +1,9 @@
-function output = apply_activation(input_vector, activation)
-output = [0;0];
-
+function output = apply_activation(T, activation)
+output = T;
 % applies switch case for possible different types of activations 
 switch activation 
     case 'abs'  % applies case for y-axis abs
-        output(1,1) = abs(input_vector(1));
-        output(2,1) = input_vector(2);
-
+        output{:,"Var1"} = abs(T{:,"Var1"});
     otherwise 
-        output = null
+        fprintf("you fucking broke it you idiot. you need to specify an activation")
 end
