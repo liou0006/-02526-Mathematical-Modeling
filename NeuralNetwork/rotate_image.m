@@ -6,6 +6,7 @@ function [rotated_image] = rotate_image(T, angle)
 % nameVar = ["X_pos", "Y_pos", "land||water"];
 % rotated_image = table('Size',sz , 'VariableTypes', typeVar, 'VariableNames', nameVar);
 rotated_image = T;
+angle = deg2rad(angle);
 cosangle = cos(angle);
 sinangle = sin(angle);
 rotationVector = [cosangle,-sinangle;sinangle, cosangle];

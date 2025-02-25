@@ -1,10 +1,10 @@
 
 T = readtable("Libian_desert_data.csv");
 
-rotation = 0; % change rotation amount here
+rotation = 30; % change rotation amount here
 rotatedImage = rotate_image(T,rotation);
 
-bias =  0;  % Change Bias here
+bias =  00;  % Change Bias here
 biasedimage = apply_bias(rotatedImage,bias);  % applying bias
 
 foldedimage = apply_activation(biasedimage,'abs');
@@ -15,4 +15,4 @@ foldedimage = apply_activation(biasedimage,'abs');
 % 
 % writematrix(foldedimage, 'transformed_data.csv');
 % 
-scatter(foldedimage,"Var1","Var2","ColorVariable","Var3")
+scatter(foldedimage,"Var1","Var2","ColorVariable","Var3","SizeData",1,MarkerFaceAlpha=.1)
