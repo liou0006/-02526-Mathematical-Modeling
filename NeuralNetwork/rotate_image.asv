@@ -1,0 +1,16 @@
+% rotates each vector using function apply_vector
+
+function [rotated_image] = rotate_image(T, angle)
+sz = [height(T) 3];
+typeVar = ["double","double","logical"];
+nameVar = ["X_pos", "Y_pos", "land||water"];
+rotated_image = table('Size',sz , 'VariableTypes', typeVar, 'VariableNames', nameVar);
+
+m = [T(k,"Var1"),T(k,"Var2")]
+
+for k = 1:height(T)
+    rotated_image(k,1:2) = apply_rotate([T(k,"Var1"),T(k,"Var2")]',angle);
+end
+rotated_image(:,3) = T(:,3);
+
+end

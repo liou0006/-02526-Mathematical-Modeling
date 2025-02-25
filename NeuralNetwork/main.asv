@@ -1,19 +1,17 @@
 
 T = readtable("Libian_desert_data.csv");
-X = T(:,1);
-Y = T(:,2);
-is = T(:,3);
 
+T([0:100:240000],:)
 
-rotatedImage = apply_rotate(30,45);
-
-biasedimage = apply_bias(30,10);
-
-foldedimage = biasedImage;
-foldedimage(1,:) = -foldedimage(1,:);
-
-saveas(foldedimage)
-
-writematrix(new_data, 'transformed_data.csv');
-
-scatter(X,Y,is,'filled');
+rotatedImage = rotate_image(T,45);
+% 
+% biasedimage = apply_bias(30,10);
+% 
+% foldedimage = biasedImage;
+% foldedimage(1,:) = -foldedimage(1,:);
+% 
+% saveas(foldedimage)
+% 
+% writematrix(new_data, 'transformed_data.csv');
+% 
+% scatter(X,Y,is,'filled');
