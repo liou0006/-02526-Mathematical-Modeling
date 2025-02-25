@@ -1,5 +1,5 @@
 %% Section enables a video recorder for outputting the finished product.
-video = VideoWriter('output_video.avi');  % Create a video object
+video = VideoWriter('output_video','MPEG-4');  % Create a video object
 %v.FrameRate = 10;  % frame rate can be set to slow down or increase speed.
 
 %% The Video to be processed are here opened and put in the object v.
@@ -83,8 +83,8 @@ end
 volumeViewer(dtotal_Vt_filtered)
 
 %% Part 2.3
-sigma = 0.2;  % change size of sigma
-filter_size = 20; %pixels from center filter size
+sigma = 10;  % change size of sigma
+filter_size = 2; %pixels from center filter size
 x = -filter_size:filter_size;
 G = (1/sqrt((2*pi*sigma^2)))*exp(-x.^2/(2*sigma^2));
 G = G / sum(G);
@@ -95,16 +95,16 @@ GGFX3 = zeros(sizing(1),sizing(2),sizing(3));
 GGFY3 = zeros(sizing(1),sizing(2),sizing(3));
 
 %for k = 1:sizing(1) % applies gradient to X and Y planes
-        GGFX3(:,:,:) =  imfilter(dtotal_Vt_filtered(:,:,:),dG);
+        GGFX3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG);
 %end
 %for k = 1:sizing(2) % applies gradient to X and Y planes
-        GGFY3(:,:,:) =  imfilter(dtotal_Vt_filtered(:,:,:),dG.'); %D3ma
+        GGFY3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG.'); %D3ma
 %end
 % gradient for Vt
 %for k = 1:sizing(1,1) % applies gradient to T plane
-    GGFZ3(:,:,:) = imfilter(dtotal_Vt_filtered(:,:,:),Gz); %D3ma
+    GGFZ3(:,:,:) = imfilter(D3matrixarray(:,:,:),Gz); %D3ma
 %end
-volumeViewer(GGFZ3) %displays 3d matrix
+volumeViewer(sqrt(GGFX3.^2+GGFY3.^2)) %displays 3d matrix
 for k = 1:sizing(1,3)
     %imshow(GGFZ3(:,:,k));
 end
@@ -113,7 +113,7 @@ end
 open(video);
 u = size(GGFZ3(:,:,k));
 v = size(GGFY3(:,:,k));
-LKrange = 50; % set size of neighbors
+LKrange = 20; % set size of neighbors
     
 for z =  1:sizing(1,3)
     for n = 1+LKrange:LKrange: sizing(1,1)-LKrange
@@ -157,12 +157,10 @@ for z =  1:sizing(1,3)
         end
     end
     %% Plot optical flow field
-    imshow(GGFZ3(:,:,z)*1e+9); %can also use 3Dmatrixarray, which is raw video.
+    imshow(sqrt(GGFX3(:,:,z).^2+GGFY3(:,:,z).^2)*20); %can also use 3Dmatrixarray, which is raw video.
     hold on;
     u_deci(1,1) = 0;
     v_deci(1,1) = 0;
-    v_deci(v_deci<1e-3)=0;
-    u_deci(u_deci<1e-3)=0;
     % draw the velocity vectors
     quiver(Y_deci, X_deci, u_deci,v_deci , 'r' )
     hold off
