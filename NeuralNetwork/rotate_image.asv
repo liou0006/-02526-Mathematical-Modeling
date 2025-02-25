@@ -6,11 +6,15 @@ typeVar = ["double","double","logical"];
 nameVar = ["X_pos", "Y_pos", "land||water"];
 rotated_image = table('Size',sz , 'VariableTypes', typeVar, 'VariableNames', nameVar);
 
-m = [T(k,"Var1"),T(k,"Var2")]
+X_Y_data = T{:,["Var1","Var2"]}.'
+rotated_image = 
 
-for k = 1:height(T)
-    rotated_image(k,1:2) = apply_rotate([T(k,"Var1"),T(k,"Var2")]',angle);
-end
-rotated_image(:,3) = T(:,3);
+
+% for k = 1:height(T)
+%     m = apply_rotate(T{k,["Var1","Var2"]}.',angle);
+% 
+%     rotated_image{k,["X_pos","Y_pos"]} = m.';
+% end
+rotated_image(:,"land||water") = T(:,"Var3");
 
 end
