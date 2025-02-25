@@ -1,56 +1,12 @@
-%open folder and files
+%% Section enables a video recorder for outputting the finished product.
+video = VideoWriter('output_video','MPEG-4');  % Create a video object
+%v.FrameRate = 10;  % frame rate can be set to slow down or increase speed.
 
+%% The Video to be processed are here opened and put in the object v.
+v = VideoReader("C:\Users\niels\Downloads\480632189_28483080964671504_9196779645610595176_n.mp4");
+frame = readFrame(v); %Read frame returns the next frame of the video, starting at the first.
 
-
-
-% Specify the folder where the files live.
-
-%myFolder = 'C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\toyProblem_F22';
-
-% Check to make sure that folder actually exists. Warn user if it doesn't.
-% if ~isfolder(myFolder)
-%     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', myFolder);
-%     uiwait(warndlg(errorMessage));
-%     myFolder = uigetdir(); % Ask for a new one.
-%     if myFolder == 0
-%         % User clicked Cancel
-%         return;
-%     end
-% end
-
-
-
-v = VideoReader("C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\toyProblem_F22\480438402_9177595782357945_2907558958716371077_n.mp4");
-frame = readFrame(v);
-
-
-
-
-
-
-
-
-% 
-% 
-% % Get a list of all files in the folder with the desired file name pattern.
-%filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  theFiles = dir(filePattern);
-% % 
-%  baseFileName = theFiles(1).name;
-%  fullFileName = fullfile(theFiles(1).folder, baseFileName);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% %fprintf(1, 'Now reading %s\n', fullFileName);
-% % Now do whatever you want with this file name,
-% % such as reading it in as an image array with imread()
-% imageArray = imread(fullFileName);
-% imageArray = rgb2gray(imageArray);
-
-
-
+%% The first frame is used to size up an array/matrix of the video.
 imageArray = frame;
 imageArray = rgb2gray(imageArray);
 
@@ -66,27 +22,20 @@ D3matrixarray = zeros(sizing,"double");
 % dtotal_filtered = zeros(sizing(1),sizing(2),sizing(3),"double");
 % dt = zeros(sizing(1),sizing(2),sizing(3)-1,"double");
 % dtotal_Vt_filtered = zeros(sizing(1),sizing(2),sizing(3), "double");
-GGF3 = zeros(sizing(1),sizing(2),sizing(3), "double");
+GGF3 = zeros(sizing(1),sizing(2),sizing(3), "double"); %makes array GGF3 filled with zeros.
 
-%for k = 1 : length(theFiles)
+%% Loops through the video frames.
 for k = 1 : v.NumFrames -1
     frame = readFrame(v);
 
-
-    % baseFileName = theFiles(k).name;
-    % fullFileName = fullfile(theFiles(k).folder, baseFileName);
-    % %fprintf(1, 'Now reading %s\n', fullFileName);
-    % % Now do whatever you want with this file name,
-    % % such as reading it in as an image array with imread()
-    % imageArray = imread(fullFileName);
-
+    %Convert a frame to a grayscale float value between 0 and 1.
     imageArray = double(frame)./256.0;
     imageArray = rgb2gray(imageArray);
 
     % 3-d matrix is created
     D3matrixarray(1:sizing(1),1:sizing(2),k) = imageArray(1:sizing(1) ,1: sizing(2));
 
-    % part 2.1
+    % part 2.1 Simpel gradient
     % dx = imageArray(1:end,2:end) - imageArray(1:end,1:end-1);
     % D3_X_matrixarray(:,:,k) = dx(:,:);
     % 
@@ -99,7 +48,7 @@ for k = 1 : v.NumFrames -1
     % end
 
 
-    % Part 2.2 axis Vt
+    % Part 2.2 Simpel Gaussian filter.
     %kernel = fspecial("gaussian",4,1);
     %dtotal_Vt_filtered(:,:,k) = imfilter(D3matrixarray(:,:,k),kernel);
 
@@ -113,27 +62,29 @@ end
 sizing = size(D3matrixarray);
 %for k = sizing[3]
 
-%Part 2.2 Axis Vx and Vy can transpose kernel for different kernel
-kernel = fspecial("gaussian",4,1);
+%% Part 2.2 Axis Vx and Vy can transpose kernel for different kernel
+kernel = fspecial("gaussian",20,6); %4,1
 dtotal_Vx_filtered = zeros(sizing);
 dtotal_Vy_filtered = zeros(sizing);
-
+dtotal_Vt_filtered = zeros(sizing);
 for k = 1 : sizing(1)
     dtotal_Vx_filtered(k,:,:) = imfilter(D3matrixarray(k,:,:),kernel);
 end
 for k = 1 : sizing(2)
-    dtotal_Vy_filtered(:,k,:) = imfilter(D3matrixarray(:,k,:),kernel);
+    dtotal_Vy_filtered(:,k,:) = imfilter(dtotal_Vx_filtered(:,k,:),kernel);
+end
+for k = 1 : sizing(3)
+    dtotal_Vt_filtered(:,:,k) = imfilter(dtotal_Vy_filtered(:,:,k),kernel);
 end
 
-
-%displays 2.2
+%% displays 2.2
 %volumeViewer(dtotal_Vx_filtered)
 %volumeViewer(dtotal_Vy_filtered)
-%volumeViewer(dtotal_Vt_filtered)
+volumeViewer(dtotal_Vt_filtered)
 
-% Part 2.3
-sigma = 1;  % change size of sigma
-filter_size = 3; %pixels from center filter size
+%% Part 2.3
+sigma = 10;  % change size of sigma
+filter_size = 2; %pixels from center filter size
 x = -filter_size:filter_size;
 G = (1/sqrt((2*pi*sigma^2)))*exp(-x.^2/(2*sigma^2));
 G = G / sum(G);
@@ -147,24 +98,22 @@ GGFY3 = zeros(sizing(1),sizing(2),sizing(3));
         GGFX3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG);
 %end
 %for k = 1:sizing(2) % applies gradient to X and Y planes
-        GGFY3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG.');
+        GGFY3(:,:,:) =  imfilter(D3matrixarray(:,:,:),dG.'); %D3ma
 %end
-%volumeViewer(GGFX3);
-%volumeViewer(GGFY3);
 % gradient for Vt
 %for k = 1:sizing(1,1) % applies gradient to T plane
-    GGFZ3(:,:,:) =  imfilter(D3matrixarray(:,:,:),Gz);
+    GGFZ3(:,:,:) = imfilter(D3matrixarray(:,:,:),Gz); %D3ma
 %end
-%volumeViewer(GGFZ3) %displays 3d matrix
+volumeViewer(sqrt(GGFX3.^2+GGFY3.^2)) %displays 3d matrix
 for k = 1:sizing(1,3)
     %imshow(GGFZ3(:,:,k));
 end
 
-%------------------ PART 3------------------%
-
+%% ------------------ PART 3------------------%
+open(video);
 u = size(GGFZ3(:,:,k));
 v = size(GGFY3(:,:,k));
-LKrange = 50; % set size of neighbors
+LKrange = 20; % set size of neighbors
     
 for z =  1:sizing(1,3)
     for n = 1+LKrange:LKrange: sizing(1,1)-LKrange
@@ -208,14 +157,17 @@ for z =  1:sizing(1,3)
         end
     end
     %% Plot optical flow field
-    imshow(D3matrixarray(:,:,z));
+    imshow(sqrt(GGFX3(:,:,z).^2+GGFY3(:,:,z).^2)*20); %can also use 3Dmatrixarray, which is raw video.
     hold on;
     u_deci(1,1) = 0;
     v_deci(1,1) = 0;
-
     % draw the velocity vectors
     quiver(Y_deci, X_deci, u_deci,v_deci , 'r' )
-    pause(0);
+    hold off
+    frame = getframe(gcf);  % Capture figure as a frame
+    writeVideo(video, frame);  % Write frame to video
+    %pause(0);
 end
+close(video);
 
 
