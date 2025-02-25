@@ -3,6 +3,6 @@ function [rotatedVector] = apply_rotate(input,angle)
 %angle is how much the vector should be angled.
 angle = deg2rad(angle);
 inputVector=input;
-rotataionVector = [cos(angle),-sin(angle);sin(angle), cos(angle)];
-rotatedVector=(rotataionVector*inputVector);
+rotationVector = [cos(angle),-sin(angle);sin(angle), cos(angle)];
+rotatedVector=(rotationVector*inputVector);
 end
