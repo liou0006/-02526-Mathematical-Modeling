@@ -3,7 +3,8 @@ output = T;
 % applies switch case for possible different types of activations 
 switch activation 
     case 'abs'  % applies case for y-axis abs
-        output{:,"Var1"} = abs(T{:,"Var1"});
+        % output{:,"Var1"} = abs(T{:,"Var1"});
+        output(:,1) = abs(T(:,1));
     otherwise 
         fprintf("you fucking broke it you idiot. you need to specify an activation")
 end
