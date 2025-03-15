@@ -79,6 +79,13 @@ while iterationCount < numel(biaslist)
         axis equal;
         hold off;
 
+
+    
+
+
+
+
+
         % ✅ If numIterations > 1, run automatically until done
         if step < numIterations
             pause(0.5); % Small delay for visualization
@@ -107,7 +114,29 @@ while iterationCount < numel(biaslist)
         uiwait(controlFig); % Pause execution until a button is clicked
         close(controlFig); % Close button figure
     end
+
 end
+
+        % Find errors on the plot
+biased = biasedimage;
+condition = (biased.Var1 > 0 & biased.Var3 == 0) | (biased.Var1 < 0 & biased.Var3 == 1);
+
+biased.Var3(condition) = 0.5;
+% Count the number of errors
+errorcount = sum(condition);
+count = size(biased, 1);
+percenterror = errorcount/count
+
+figure(); % Error plot
+hold on;
+title('Error Plot');
+scatter(biased.Var1, biased.Var2,1, biased.Var3, 'filled', 'MarkerFaceAlpha', 0.5);
+xline(0, 'r', 'LineWidth', 1);
+title(sprintf('Final Image'));
+xlabel('X');
+ylabel('Y');
+axis equal;
+hold off;
 
 % ✅ Function to Stop Execution
 function stop_execution()
