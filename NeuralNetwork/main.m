@@ -1,26 +1,31 @@
-clear; clc;
-global stopExecution numIterations; % Global variables to control execution
-stopExecution = false; % Default: continue execution
-numIterations = 1; % Default: run one step at a time
+clear; clc; close all;
+global stopExecution numIterations;
+stopExecution = false;
+numIterations = 1;
 
-% ---- User Input for Number of Iterations ----
+% Load data
+T = readtable("Libian_desert_data.csv");
+rotatelist =     [90,   35,     0,      30,     -10,        0,      -10,    -45]; % Rotation angles
+biaslist =       [0,    120,    -80,    -45,    -250,       -80,    -55,    0]; % Bias values
+activationList = [0,    1,      1,      1,      1,          1,      1,      1]; % Activation function flags
+
 prompt = 'How many iterations do you want to run? (Enter 0 for infinite): ';
 maxIterations = input(prompt);
 
-% Load data
-T = readtable("C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\NeuralNetwork\Libian_desert_data.csv");
+if maxIterations == 0
+    % interpret "0 for infinite" as "go until the end"
+    maxIterations = numel(biaslist); 
+    numIterations = maxIterations;  % So we actually use the prompt
 
-rotatelist =     [90,   35,     0,      30,     -10,        0,      -10, 0, 0]; % Rotation angles
-biaslist =       [0,    120,    -80,    -45,    -250,       -80,    -55, 0,0]; % Bias values
-activationList = [0,    1,      1,      1,      1,          1,      0, 0, 0]; % Activation function flags
+end
 
 fig = figure('Name', 'Neural Network Visualization', 'NumberTitle', 'off');
 set(fig, 'Position', [100, 100, 1200, 500]); % Set figure size
 
-iterationCount = 0; % Track the number of iterations
+iterationCount = 0;
+t0 = tic;
 
 while iterationCount < numel(biaslist)
-    % ✅ Check stopExecution flag before proceeding
     if stopExecution
         disp('Execution stopped by user.');
         close all; % Close all figures before exiting
@@ -33,8 +38,7 @@ while iterationCount < numel(biaslist)
             disp('Reached end of iterations.');
             break;
         end
-        
-        % Apply transformations
+
         bias = biaslist(iterationCount);
         rotation = rotatelist(iterationCount);
 
@@ -49,14 +53,13 @@ while iterationCount < numel(biaslist)
 
         T = foldedimage;
 
-        % Find mirrored elements
+        % Mirrored elements
         gg = foldedimage.Var1 - biasedimage.Var1;
         m_index = find(gg > 0);
         array_fold = foldedimage(m_index, :);
 
         clf(fig); % Clear figure for updating
 
-        % ---- Plot Folded Image ----
         subplot(1, 2, 1);
         hold on;
         scatter(foldedimage.Var1, foldedimage.Var2, 1, foldedimage.Var3, 'filled', 'MarkerFaceAlpha', 0.1);
@@ -68,7 +71,6 @@ while iterationCount < numel(biaslist)
         axis equal;
         hold off;
 
-        % ---- Plot Biased Image ----
         subplot(1, 2, 2);
         hold on;
         scatter(biasedimage.Var1, biasedimage.Var2, 1, biasedimage.Var3, 'filled', 'MarkerFaceAlpha', 0.1);
@@ -79,55 +81,90 @@ while iterationCount < numel(biaslist)
         axis equal;
         hold off;
 
+        drawnow;
 
-    
-
-
-
-
-
-        % ✅ If numIterations > 1, run automatically until done
-        if step < numIterations
-            pause(0.5); % Small delay for visualization
+        % Pause before next figure
+        while toc(t0) < 0.2
+            drawnow;        % process any UI events
+            if stopExecution
+                break;
+            end
         end
     end
 
-    % ✅ Show UI after running all iterations
-    if iterationCount < numel(biaslist) && ~stopExecution
-        controlFig = figure('Name', 'Control Iterations', 'NumberTitle', 'off', 'Position', [600, 400, 300, 120]);
-
-        % "Continue (1 Step)" button
-        uicontrol('Style', 'pushbutton', 'String', 'Continue (1 Step)', ...
-            'Position', [20 60 120 40], ...
-            'Callback', @(~,~) set_num_iterations(1));
-
-        % "Run 5 Steps" button (Runs 5 more iterations)
-        uicontrol('Style', 'pushbutton', 'String', 'Run 5 Steps', ...
-            'Position', [160 60 120 40], ...
-            'Callback', @(~,~) set_num_iterations(5));
-
-        % "Stop Execution" button
-        uicontrol('Style', 'pushbutton', 'String', 'Stop Execution', ...
-            'Position', [90 10 120 40], ...
-            'Callback', @(~,~) stop_execution());
-
-        uiwait(controlFig); % Pause execution until a button is clicked
-        close(controlFig); % Close button figure
+    if stopExecution
+        disp('Breaking the while-loop due to user stop.');
+        break;
     end
+
+
+if iterationCount < numel(biaslist) && ~stopExecution
+    controlFig = figure('Name', 'Control Iterations', ...
+        'NumberTitle', 'off', 'Position', [600, 400, 300, 120]);
+
+    % "Continue (1 Step)" button
+    uicontrol('Style', 'pushbutton', 'String', 'Continue (1 Step)', ...
+        'Position', [20 60 120 40], ...
+        'Callback', @(~,~) set_num_iterations(1));
+
+    % "Run desired steps" button
+    uicontrol('Style', 'pushbutton', 'String', sprintf('Run %d Steps', maxIterations), ...
+        'Position', [160 60 120 40], ...
+        'Callback', @(~,~) set_num_iterations(maxIterations));
+
+    % "Stop Execution" button
+    uicontrol('Style', 'pushbutton', 'String', 'Stop Execution', ...
+        'Position', [20 10 120 40], ...
+        'Callback', @(~,~) stop_execution());
+
+    % "Run to End" button
+    remaining = numel(biaslist) - iterationCount;
+    uicontrol('Style', 'pushbutton', 'String', 'Run to End', ...
+        'Position', [160 10 120 40], ...
+        'Callback', @(~,~) set_num_iterations(remaining));
+
+    uiwait(controlFig); % Pause execution until a button is clicked
+    close(controlFig);  % Close button figure
+end
 
 end
 
-        % Find errors on the plot
+
+% Error plot function
+errorPlot(T, -100,55);
+
+
+% Function to Stop Execution
+function stop_execution()
+global stopExecution;
+stopExecution = true; % Set flag to stop execution
+disp('User pressed Stop Execution. Stopping loop...');
+uiresume(gcbf); % Resume execution so the loop checks stopExecution
+end
+
+function set_num_iterations(value)
+% global numIterations;
+numIterations = value; % Set the number of iterations to run automatically
+disp(['Running ' num2str(numIterations) ' iterations before next pause.']);
+uiresume(gcbf); % Resume execution
+end
+
+function errorPlot(T,rotation, bias)
+%%%%%%%%%% Final Rotation and Translation to find the error
+rotatedImage = rotate_image(T, rotation);
+biasedimage = apply_bias(rotatedImage, bias);
+
 biased = biasedimage;
 condition = (biased.Var1 > 0 & biased.Var3 == 0) | (biased.Var1 < 0 & biased.Var3 == 1);
 
 biased.Var3(condition) = 0.5;
-% Count the number of errors
 errorcount = sum(condition);
 count = size(biased, 1);
-percenterror = errorcount/count
+percenterror = errorcount/count*100;
+disp('Error percent: ')
+disp(percenterror);
 
-figure(); % Error plot
+figure();
 hold on;
 title('Error Plot');
 scatter(biased.Var1, biased.Var2,1, biased.Var3, 'filled', 'MarkerFaceAlpha', 0.5);
@@ -137,19 +174,4 @@ xlabel('X');
 ylabel('Y');
 axis equal;
 hold off;
-
-% ✅ Function to Stop Execution
-function stop_execution()
-    global stopExecution;
-    stopExecution = true; % Set flag to stop execution
-    disp('User pressed Stop Execution. Stopping loop...');
-    uiresume(gcbf); % Resume execution so the loop checks stopExecution
-end
-
-% ✅ Function to Set Number of Iterations
-function set_num_iterations(value)
-    global numIterations;
-    numIterations = value; % Set the number of iterations to run automatically
-    disp(['Running ' num2str(numIterations) ' iterations before next pause.']);
-    uiresume(gcbf); % Resume execution
 end

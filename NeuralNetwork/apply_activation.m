@@ -4,6 +4,8 @@ output = T;
 switch activation 
     case 'abs'  % applies case for y-axis abs
         output{:,"Var1"} = abs(T{:,"Var1"});
+    case 'per'
+        output{:,"Var1"} = 
     otherwise 
         fprintf("you fucking broke it you idiot. you need to specify an activation")
 end
