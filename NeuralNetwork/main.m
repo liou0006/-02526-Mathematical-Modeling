@@ -46,7 +46,7 @@ while iterationCount < numel(biaslist)
         biasedimage = apply_bias(rotatedImage, bias);
 
         if activationList(iterationCount) == 1
-            foldedimage = apply_activation(biasedimage, 'abs');
+            foldedimage = apply_activation(biasedimage, 'relu');
         else
             foldedimage = biasedimage;
         end
@@ -89,6 +89,10 @@ while iterationCount < numel(biaslist)
             if stopExecution
                 break;
             end
+        end
+
+        if step == 3
+            saveas(fig,'NeuralNetwork Layer 3','png');
         end
     end
 
@@ -164,7 +168,9 @@ percenterror = errorcount/count*100;
 disp('Error percent: ')
 disp(percenterror);
 
-figure();
+writetable(biased,'LiouReluBiasedTable');
+
+errorPlotfig = figure();
 hold on;
 title('Error Plot');
 scatter(biased.Var1, biased.Var2,1, biased.Var3, 'filled', 'MarkerFaceAlpha', 0.5);
@@ -174,4 +180,6 @@ xlabel('X');
 ylabel('Y');
 axis equal;
 hold off;
+saveas(errorPlotfig,'ErrorPlotLiouRelu','png')
 end
+
