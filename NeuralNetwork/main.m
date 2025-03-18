@@ -86,7 +86,7 @@ biased.Var3(condition) = 0.5;
 % Count the number of errors
 errorcount = sum(condition);
 count = size(biased, 1);
-percenterror = errorcount/count
+percenterror = errorcount/count;
 
 figure(); % Error plot
 hold on;
