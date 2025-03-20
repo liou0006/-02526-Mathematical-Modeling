@@ -12,23 +12,23 @@ col2 = data[:, 2]  # Second column
 
 scatter(col1, col2, xlabel="distance", ylabel="height", title="Location Data", legend=true, markersize=4)
 
-# Function to calculate the Riemann sum
-function riemann_sum(x, y)
-    sum = 0.0
-    for i in 1:length(x)-1
-        sum += (x[i+1] - x[i]) * y[i]
-        sum += abs(x[i+1] - x[i]) * 10 # depth of canal
-    end
-    return sum
-end
+CHD = 10 # Canal height depth
+plot!(col1, col2 .- CHD, line=:dash, label="Canal height")
 
-# Calculate the Riemann sum
-sum = riemann_sum(col1, col2)
-println("Riemann sum: ", sum)
+# Calculate the Riemann Riemannsum_ofgraph
+Riemannsum_ofgraph = riemann_sum(col1, col2, CHD)
+println("Riemann sum: ", Riemannsum_ofgraph)
 
-# Crater diamensions of a 100 kiloton explosion from page 238 of the textbook
-# alluvial_soil 
+# Crater diamensions of a 100 kiloton explosion 
+# from page 238 of the textbook
+# alluvial_soil (all units in feet)
 opitmal_depth_of_burst = 635
 crater_radius = 611
 depth = 323
 Volume = 179000000
+
+m = Model(GLPK.Optimizer)
+
+@variable(m, bombs >= 0)
+@variable(m, x[1:length(col1)] >= 0)
+
