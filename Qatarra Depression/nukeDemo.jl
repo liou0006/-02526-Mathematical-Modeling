@@ -25,8 +25,9 @@ function constructA(H, K)
     # Make a function that returns A when given H and K
     for i = 1:length(H)
         for j = 1:length(H)
-
-            A[i, j] = 
+            if i == j
+                A[i, j] = K[i,j] + K[i+1,j] + K[i-1,j] + K[i,j+1] + K[i,j-1]
+            end
         end
     end
 
