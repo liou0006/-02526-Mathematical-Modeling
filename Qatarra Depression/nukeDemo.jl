@@ -1,4 +1,4 @@
-using GLPK, Cbc, JuMP, SparseArrays, 
+using GLPK, Cbc, JuMP, SparseArrays
 
 H = [
 10
