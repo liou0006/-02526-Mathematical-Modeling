@@ -1,3 +1,4 @@
+
 % Specify the folder where the files live.
 myFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 % Check to make sure that folder actually exists.  Warn user if it doesn't.
@@ -10,25 +11,54 @@ if ~isfolder(myFolder)
         return;
     end
 end
+
+ArraySize = 0;
+
+fileSize = 10;
+% A = cell(224*224,3);
+A = zeros(224*224,fileSize);
+hasPnemonia = zeros(1,fileSize);
+
+i = 0;
+
 % Get a list of all files in the folder with the desired file name pattern.
 filePattern = fullfile(myFolder, '*.png'); % Change to whatever pattern you need.
 theFiles = dir(filePattern);
-for k = 1 : length(theFiles)
+% for k = 1 : length(theFiles)
+for k = 1 : fileSize
     baseFileName = theFiles(k).name;
     fullFileName = fullfile(theFiles(k).folder, baseFileName);
 
+
+    imageArray = imread(fullFileName);
+
+    imageArray = reshape(imageArray,[],1);
+
+    A(:,k) = imageArray;
+
+
     if (contains(fullFileName,"positive"))
         % fprintf(1, 'Now reading %s\n', fullFileName);
-
+        hasPnemonia(:,k) = 1;
+    else
+        hasPnemonia(:,k) = 0;
     end
+
+
 
     % Now do whatever you want with this file name,
     % such as reading it in as an image array with imread()
-    imageArray = imread(fullFileName);
-    imshow(imageArray);  % Display image.
-    drawnow; % Force display to update immediately.
+
+    % imshow(imageArray);  % Display image.
+    % drawnow; % Force display to update immediately.
+
+
+
+
 end
 
-% Mdl = fitclinear(data,Y);
+
+Mdl = fitclinear(A(1:10,:),hasPnemonia);
+% i = i +1;
 %
 % [Label, Score] = predict(Mdl,data);
