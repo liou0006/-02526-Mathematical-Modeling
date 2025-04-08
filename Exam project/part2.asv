@@ -52,7 +52,7 @@ for k = 1:numel(image_cells_filtered)
     ALL_ARRAY(:,k) = image_cells_filtered{k} ;
 end
 
-[Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , "ObservationsIn","rows","Regularization",'ridge', 'Lambda','auto')
+[Mdl,fitinfo] = fitclinear(ALL_ARRAY, hasPnemoniaTrain', "ObservationsIn","colums","Regularization",'ridge', 'Lambda','auto')
 [label, score] = predict(Mdl, ALL_ARRAY');
 testing(:,1) = label;
 testing(:,2) = hasPnemoniaTrain;
