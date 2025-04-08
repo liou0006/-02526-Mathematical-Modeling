@@ -17,9 +17,8 @@ for k = 1 : length(theFiles)
     baseFileName = theFiles(k).name;
     fullFileName = fullfile(theFiles(k).folder, baseFileName);
 
-    if (contains(fullFileName,"positive"))
-        % fprintf(1, 'Now reading %s\n', fullFileName);
-
+    if (fullFileName ~= '*positive.png')
+        fprintf(1, 'Now reading %s\n', fullFileName);
     end
 
     % Now do whatever you want with this file name,
@@ -28,6 +27,13 @@ for k = 1 : length(theFiles)
     imshow(imageArray);  % Display image.
     drawnow; % Force display to update immediately.
 end
+
+
+
+
+
+
+
 
 % Mdl = fitclinear(data,Y);
 %
