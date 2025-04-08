@@ -2,15 +2,6 @@
 % Specify the folder where the files live.
 TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
-function [percent,B] = errortest(A)
-    B = zeros(length(A));
-    if A(2) == A(1)
-        B( : ) = 1;
-    else
-        B( : ) = 0;
-    end
-    percent = sum(B(:))/length(B)
-end
 
 % Check to make sure that folder actually exists.  Warn user if it doesn't.
 if ~isfolder(TrainFolder)
@@ -23,7 +14,6 @@ if ~isfolder(TrainFolder)
     end
 end
 
-ArraySize = 0;
 
 fileSize = 200;
 % A = cell(224*224,3);
@@ -34,9 +24,7 @@ hasPnemoniaTest = zeros(1,fileSize);
 masterchief1 = zeros(fileSize,3);
 
 % Get a list of all files in the folder with the desired file name pattern.
-filePatternTrain = fullfile(TrainFolder, '*.png'); % Change to whatever pattern you need.
-theFilesTrain = dir(filePatternTrain);
-% for k = 1 : length(theFiles)
+c% for k = 1 : length(theFiles)
 
 % Get a list of all files in the folder with the desired file name pattern.
 filePatternTest = fullfile(TestFolder, '*.png'); % Change to whatever pattern you need.
