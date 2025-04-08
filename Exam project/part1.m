@@ -89,8 +89,7 @@ for k = 1 : fileSize
 end
 
 
-
-Mdl = fitclinear(ArrayTrain(1:fileSize,:),hasPnemoniaTrain,"Regularization","ridge","Lambda",1.5, "Bias", 0, bet);
+Mdl = fitclinear(ArrayTrain(1:fileSize,:),hasPnemoniaTrain,"Regularization","ridge","Lambda",1.5, "Bias", 0);
 [Label, Score] = predict(Mdl,ArrayTest(1:fileSize,:));
 
 hasPnemoniaTest = hasPnemoniaTest';
