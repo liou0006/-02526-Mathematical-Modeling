@@ -36,6 +36,8 @@ for k = 1:numel(theFiles)
     image_array_filtered{k} = imfilter(image_Array{k},kernel)
 
 end
-for k = 1:numel(image_array_filtered)
+ 
+% creates cells with 1-column vectors
+for k = 1:numel(image_array_filtered) 
     image_array_filtered{k} = reshape(image_array_filtered{k},[],1)
 end
