@@ -1,9 +1,5 @@
 using GLPK, Cbc, JuMP, SparseArrays, Cbc, DelimitedFiles
 
-
-
-
-
 # METHOD 1 
 # reading the content of file as a string 
 lines = readlines("Interpolated.txt")
@@ -60,8 +56,36 @@ end
 A = constructA(H, K)
 
 println(size(A));
-println(A)
+# println(A)
 # println((H));
+
+
+function constructB(H, K)
+    n = length(H)  # Size of the matrix
+    A = zeros(Float64, n, n)  # Initialize the matrix
+
+    for i = 1:n
+        for j = 1:n
+            if i == j
+                A[i, j] = K[1]  # Main diagonal
+            elseif abs(i - j) == 1
+                A[i, j] = K[2]  # Adjacent to the diagonal
+            elseif abs(i - j) == 2
+                A[i, j] = K[3]  # Two steps away from the diagonal
+            end
+        end
+    end
+
+    return A
+end
+
+H = [10, 30, 70, 50, 70, 120, 140, 120, 100, 80]  # Example H
+K = [300, 140, 40]  # Example K
+
+A1 = constructB(H, K)
+
+# Print the resulting matrix
+println(A1)
 
 
 # for i = 1:3

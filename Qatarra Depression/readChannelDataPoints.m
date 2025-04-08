@@ -21,7 +21,6 @@ scatter(vektor,vq, 50,vq, 'filled', 'MarkerFaceAlpha', 0.8);
 title('Scatter plot of Channel Data')
 xlabel('Distance (m)');
 ylabel('Height (m)');
-%%
 
 arr = [vektor', vq'];
 a2t = array2table(arr);
