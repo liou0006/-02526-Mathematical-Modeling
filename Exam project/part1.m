@@ -54,24 +54,16 @@ for k = 1 : fileSize
         hasPnemoniaTrain(:,k) = 0;
     end
 
-
     baseFileNameTest = theFilesTest(k).name;
     fullFileNameTest = fullfile(theFilesTest(k).folder,baseFileNameTest);
-
     imageArrayTest = imread(fullFileNameTest);
-
     imageArrayTest = reshape(imageArrayTest,[],1);
-
     ArrayTest(:,k) = imageArrayTest;
-
     if (contains(fullFileNameTest,"positive"))
         hasPnemoniaTest(:,k) = 1;
     else
         hasPnemoniaTest(:,k) = 0;
     end
-
-    % imshow(imageArray);  % Display image.
-    % drawnow; % Force display to update immediately.
 
 end
 
@@ -110,11 +102,12 @@ betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
 
 h1 = figure;
-imshow(betaim, []);               % [] tells imshow to scale from min→max
-colormap(gca);            % or gray, jet, whatever you like
+imshow(betaim, []);            
+colormap(gca);          
 colorbar;
 title('Absolute Value of Learned Weights image');
-
 saveas(gca,'Absolute Value of Learned Weights image','png')
+
+
 
 clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder

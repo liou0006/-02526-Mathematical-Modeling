@@ -94,9 +94,6 @@ disp((sum(testing(:,3)) / numel(theFiles)) * 100);
 
 
 
-
-
-
 % Create a function to calculate 
 
 function featureVector = computeOrientationHistogram(image, patchSize, numBins)
