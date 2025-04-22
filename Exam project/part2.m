@@ -40,10 +40,10 @@ for k = 1:numel(theFiles)
     fullFileName = fullfile(theFiles(k).folder, baseFileName);
     image_Array{k} = imread(fullFileName);
 
-    image_doub_Array = cellfun(@double, image_Array, UniformOutput=false);% converts to a double
+    % image_doub_Array = cellfun(@double, image_Array, UniformOutput=false);% converts to a double
     
     image_cells_filtered{k} = imfilter(image_doub_Array{k},kernel); %filters the data using guassian
-    
+
     if (contains(baseFileName,"positive"))
         % fprintf(1, 'Now reading %s\n', fullFileName);
         hasPnemoniaTrain(k) = 1;
