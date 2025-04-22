@@ -44,6 +44,11 @@ for k = 1:numel(theFiles)
     
     image_cells_filtered{k} = imfilter(image_doub_Array{k},kernel); %filters the data using guassian
     
+    volume{k} = image_cells_filtered{k};
+
+
+
+
     if (contains(baseFileName,"positive"))
         % fprintf(1, 'Now reading %s\n', fullFileName);
         hasPnemoniaTrain(k) = 1;
@@ -51,12 +56,14 @@ for k = 1:numel(theFiles)
         hasPnemoniaTrain(k) = 0;
     end
 end
+volumeViewer(volume)
 
 ALL_ARRAY = zeros(length(image_cells_filtered{1})^2,length(image_cells_filtered));
+
 % creates cells with 1-column vectors
 for k = 1:numel(image_cells_filtered) 
     image_cells_filtered{k} = reshape(image_cells_filtered{k},[],1);
-    ALL_ARRAY(:,k) = image_cells_filtered{k} ;
+    ALL_ARRAY(:,k) = image_cells_filtered{k}; % compiles filtered images to 1 array
 end
 
 % creating and testing the model on the same data
