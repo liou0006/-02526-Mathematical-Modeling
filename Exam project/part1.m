@@ -45,13 +45,9 @@ resultTable = zeros(fileSize,5);
 for k = 1 : fileSize
     baseFileNameTrain = theFilesTrain(k).name;
     fullFileNameTrain = fullfile(theFilesTrain(k).folder, baseFileNameTrain);
-
     imageArrayTrain = imread(fullFileNameTrain);
-
     imageArrayTrain = reshape(imageArrayTrain,1,[]);
-
     ArrayTrain(:,k) = imageArrayTrain;
-
     if (contains(fullFileNameTrain,"positive"))
         hasPnemoniaTrain(:,k) = 1;
     else

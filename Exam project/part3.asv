@@ -73,13 +73,13 @@ for k = 1:numel(image_cells_filtered)
 end
 
 % Train Linear Classifier
-[Mdl, fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain', ...
+[Mdl, fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
     "Lambda", "auto");
 
 % Predict on Training Data
-[label, score] = predict(Mdl, histTest');
+[label, score] = predict(Mdl, histTest);
 testing(:,1) = label;
 testing(:,2) = hasPnemoniaTrain;
 
