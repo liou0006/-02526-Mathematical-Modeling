@@ -1,4 +1,5 @@
 
+clear; clc;
 % Specify the folder where the files live.
 TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
@@ -31,6 +32,17 @@ filePatternTest = fullfile(TestFolder, '*.png'); % Change to whatever pattern yo
 theFilesTest = dir(filePatternTest);
 
 
+
+fileSize = 200;
+% fileSize = length(theFilesTrain);
+
+ArrayTrain = zeros(224*224,fileSize);
+ArrayTest = zeros(224*224,fileSize);
+hasPnemoniaTrain = zeros(1,fileSize);
+hasPnemoniaTest = zeros(1,fileSize);
+resultTable = zeros(fileSize,5);
+
+
 for k = 1 : fileSize
     baseFileNameTrain = theFilesTrain(k).name;
     fullFileNameTrain = fullfile(theFilesTrain(k).folder, baseFileNameTrain);
@@ -41,9 +53,7 @@ for k = 1 : fileSize
 
     ArrayTrain(:,k) = imageArrayTrain;
 
-
     if (contains(fullFileNameTrain,"positive"))
-        % fprintf(1, 'Now reading %s\n', fullFileName);
         hasPnemoniaTrain(:,k) = 1;
     else
         hasPnemoniaTrain(:,k) = 0;
@@ -60,38 +70,35 @@ for k = 1 : fileSize
     ArrayTest(:,k) = imageArrayTest;
 
     if (contains(fullFileNameTest,"positive"))
-        % fprintf(1, 'Now reading %s\n', fullFileName);
         hasPnemoniaTest(:,k) = 1;
     else
         hasPnemoniaTest(:,k) = 0;
     end
 
-
-    % Now do whatever you want with this file name,
-    % such as reading it in as an image array with imread()
-
     % imshow(imageArray);  % Display image.
     % drawnow; % Force display to update immediately.
 
-
 end
 
-
-Mdl = fitclinear(ArrayTrain(1:fileSize,:),hasPnemoniaTrain,"Regularization","ridge","Lambda",1.5, "Bias", 0);
+Mdl = fitclinear(ArrayTrain(1:fileSize,:),hasPnemoniaTrain,"ObservationsIn","columns", "Regularization","ridge","Lambda",1.5, "Bias", 0,"Learner","logistic");
 [Label, Score] = predict(Mdl,ArrayTest(1:fileSize,:));
-
 hasPnemoniaTest = hasPnemoniaTest';
 
-masterchief1(:,1) = Label;
-masterchief1(:,2) = hasPnemoniaTest;
+
+resultTable(:,1) = Label;
+resultTable(:,2) = hasPnemoniaTest;
+resultTable(:,4) = Score(:,1);
+resultTable(:,5) = Score(:,2);
 
 for k = 1:fileSize
-    if masterchief1(k,1) == masterchief1(k,2)
-        masterchief1(k,3) = 1;
+    if resultTable(k,1) == resultTable(k,2)
+        resultTable(k,3) = 1;
     else
-        masterchief1(k,3) = 0;
+        resultTable(k,3) = 0;
     end
 end
 
-disp(sum(masterchief1(:,3)));
-disp((sum(masterchief1(:,3))/fileSize)*100);
+disp(sum(resultTable(:,3)));
+disp((sum(resultTable(:,3))/fileSize)*100);
+
+clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
