@@ -113,12 +113,10 @@ Beta = Mdl.Beta;
 betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
 
-h1 = figure;
+figure;
 imshow(betaim, []);               % [] tells imshow to scale from min→max
 colormap(gca);            % or gray, jet, whatever you like
 colorbar;
-title('Absolute Value of Learned Weights image');
-
-saveas(gca,'Absolute Value of Learned Weights image','png')
+title('Absolute Value of Learned Weights (224×224)');
 
 clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
