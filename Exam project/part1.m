@@ -15,10 +15,17 @@ if ~isfolder(TrainFolder)
     end
 end
 
+
+fileSize = 200;
+% A = cell(224*224,3);
+ArrayTrain = zeros(224*224,fileSize);
+ArrayTest = zeros(224*224,fileSize);
+hasPnemoniaTrain = zeros(1,fileSize);
+hasPnemoniaTest = zeros(1,fileSize);
+masterchief1 = zeros(fileSize,3);
+
 % Get a list of all files in the folder with the desired file name pattern.
-filePatternTrain = fullfile(TrainFolder, '*.png'); % Change to whatever pattern you need.
-theFilesTrain = dir(filePatternTrain);
-% for k = 1 : length(theFiles)
+c% for k = 1 : length(theFiles)
 
 % Get a list of all files in the folder with the desired file name pattern.
 filePatternTest = fullfile(TestFolder, '*.png'); % Change to whatever pattern you need.
