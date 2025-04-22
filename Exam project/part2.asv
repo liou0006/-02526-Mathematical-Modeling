@@ -53,11 +53,10 @@ for k = 1:numel(theFiles)
 end
 
 ALL_ARRAY = zeros(length(image_cells_filtered{1})^2,length(image_cells_filtered));
-
 % creates cells with 1-column vectors
 for k = 1:numel(image_cells_filtered) 
     image_cells_filtered{k} = reshape(image_cells_filtered{k},[],1);
-    ALL_ARRAY(:,k) = image_cells_filtered{k}; % compiles filtered images to 1 array
+    ALL_ARRAY(:,k) = image_cells_filtered{k} ;
 end
 
 % creating and testing the model on the same data
