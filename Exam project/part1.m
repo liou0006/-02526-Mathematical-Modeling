@@ -1,5 +1,7 @@
 
-clear; clc;
+clear; clc; close all;
+
+%%
 % Specify the folder where the files live.
 TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
@@ -16,25 +18,22 @@ if ~isfolder(TrainFolder)
 end
 
 
-fileSize = 200;
+fileSize = 400;
 % A = cell(224*224,3);
-ArrayTrain = zeros(224*224,fileSize);
-ArrayTest = zeros(224*224,fileSize);
+ArrayTrain = zeros(fileSize,224*224);
+ArrayTest  = zeros(fileSize,224*224);
 hasPnemoniaTrain = zeros(1,fileSize);
 hasPnemoniaTest = zeros(1,fileSize);
 masterchief1 = zeros(fileSize,3);
 
-% Get a list of all files in the folder with the desired file name pattern.
-c% for k = 1 : length(theFiles)
 
 % Get a list of all files in the folder with the desired file name pattern.
 filePatternTest = fullfile(TestFolder, '*.png'); % Change to whatever pattern you need.
 theFilesTest = dir(filePatternTest);
 
+filePatternTrain = fullfile(TrainFolder, '*.png'); % Change to whatever pattern you need.
+theFilesTrain = dir(filePatternTrain);
 
-
-fileSize = 200;
-% fileSize = length(theFilesTrain);
 
 ArrayTrain = zeros(224*224,fileSize);
 ArrayTest = zeros(224*224,fileSize);
@@ -46,42 +45,36 @@ resultTable = zeros(fileSize,5);
 for k = 1 : fileSize
     baseFileNameTrain = theFilesTrain(k).name;
     fullFileNameTrain = fullfile(theFilesTrain(k).folder, baseFileNameTrain);
-
     imageArrayTrain = imread(fullFileNameTrain);
-
-    imageArrayTrain = reshape(imageArrayTrain,[],1);
-
+    imageArrayTrain = reshape(imageArrayTrain,1,[]);
     ArrayTrain(:,k) = imageArrayTrain;
-
     if (contains(fullFileNameTrain,"positive"))
         hasPnemoniaTrain(:,k) = 1;
     else
         hasPnemoniaTrain(:,k) = 0;
     end
 
-
     baseFileNameTest = theFilesTest(k).name;
     fullFileNameTest = fullfile(theFilesTest(k).folder,baseFileNameTest);
-
     imageArrayTest = imread(fullFileNameTest);
-
     imageArrayTest = reshape(imageArrayTest,[],1);
-
     ArrayTest(:,k) = imageArrayTest;
-
     if (contains(fullFileNameTest,"positive"))
         hasPnemoniaTest(:,k) = 1;
     else
         hasPnemoniaTest(:,k) = 0;
     end
 
-    % imshow(imageArray);  % Display image.
-    % drawnow; % Force display to update immediately.
-
 end
 
-Mdl = fitclinear(ArrayTrain(1:fileSize,:),hasPnemoniaTrain,"ObservationsIn","columns", "Regularization","ridge","Lambda",1.5, "Bias", 0,"Learner","logistic");
-[Label, Score] = predict(Mdl,ArrayTest(1:fileSize,:));
+Mdl = fitclinear(ArrayTrain',hasPnemoniaTrain, ...
+    "ObservationsIn","rows", ...
+    "Regularization","ridge", ...
+    "Lambda",'auto', ...
+    "Bias", 0, ...
+    "Learner","logistic");
+
+[Label, Score] = predict(Mdl,ArrayTest');
 hasPnemoniaTest = hasPnemoniaTest';
 
 
@@ -98,7 +91,23 @@ for k = 1:fileSize
     end
 end
 
+fprintf('How many positive images:')
 disp(sum(resultTable(:,3)));
+fprintf('How many percentages of total image is true:')
 disp((sum(resultTable(:,3))/fileSize)*100);
+
+Beta = Mdl.Beta;
+
+betaim = reshape(Beta,224,224);
+betaim = abs(betaim);
+
+h1 = figure;
+imshow(betaim, []);            
+colormap(gca);          
+colorbar;
+title('Absolute Value of Learned Weights image');
+saveas(gca,'Absolute Value of Learned Weights image','png')
+
+
 
 clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
