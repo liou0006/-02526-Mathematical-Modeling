@@ -7,7 +7,6 @@ TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektro
 [Mdl, Score] = fitPart1(TrainFolder);
 [Label, Score, hasPnemoniaTest] = modelPredict(TestFolder, Mdl);
 
-
 resultTable(:,1) = Label;
 resultTable(:,2) = hasPnemoniaTest;
 resultTable(:,4) = Score(:,1);
@@ -30,12 +29,14 @@ Beta = Mdl.Beta;
 betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
 
+titleOfBeta = "Abs Value of learned weights image";
+
 h1 = figure;
 imshow(betaim, []);            
 colormap(gca);          
 colorbar;
-title('Absolute Value of Learned Weights image');
-saveas(gca,'Absolute Value of Learned Weights image','png')
+title(titleOfBeta);
+saveas(gca,titleOfBeta,'png')
 
 
 
