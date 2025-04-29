@@ -4,7 +4,7 @@ clear; clc; close all;
 TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
-[Mdl, Score] = fitPart1(TrainFolder);
+[Mdl, fitinfo] = fitPart1(TrainFolder);
 [Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl);
 
 resultTable(:,1) = Label;
