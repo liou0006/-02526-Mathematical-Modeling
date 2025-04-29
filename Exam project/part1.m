@@ -25,6 +25,9 @@ disp(sum(resultTable(:,3)));
 fprintf('How many percentages of total image is true:')
 disp((sum(resultTable(:,3))/numel(hasPnemoniaTest))*100);
 
+PartNumber = 1;
+writeToTable(resultTable, PartNumber);
+
 Beta = Mdl.Beta;
 betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
