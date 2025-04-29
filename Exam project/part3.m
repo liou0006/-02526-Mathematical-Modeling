@@ -1,11 +1,6 @@
-
-clear, clc, close all;
-% TrainFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Train";
-% TestFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Test";
-TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
-TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
-
-
+TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
+TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
+%
 
 if ~isfolder(TrainFolder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', TrainFolder);
@@ -18,7 +13,7 @@ end
 
 % Get all PNG files from the folder
 extracted_Trained = fullfile(TrainFolder, '*.png');
-theFiles = dir(extracted_Trained);
+theFiles = dir(extracted_Trained);                                     
 
 filePatternTest = fullfile(TestFolder, '*.png'); % Change to whatever pattern you need.
 theFilesTest = dir(filePatternTest);
