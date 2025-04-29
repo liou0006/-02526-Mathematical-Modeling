@@ -1,5 +1,6 @@
-TrainFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Train";
-TestFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Test";
+TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
+TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
+%
 
 if ~isfolder(TrainFolder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', TrainFolder);
@@ -12,7 +13,7 @@ end
 
 % Get all PNG files from the folder
 extracted_Trained = fullfile(TrainFolder, '*.png');
-theFiles = dir(extracted_Trained);
+theFiles = dir(extracted_Trained);                                     
 
 if isempty(theFiles)
     error('No PNG files found in the selected folder.');
