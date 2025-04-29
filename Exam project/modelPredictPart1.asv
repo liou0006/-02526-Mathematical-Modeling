@@ -1,10 +1,10 @@
-function [Mdl, fitinfo] = fitPart1(TrainFolder)
+function [label, score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl)
 
-filePatternTest = fullfile(TrainFolder, '*.png');
+filePatternTest = fullfile(TestFolder, '*.png');
 theFiles = dir(filePatternTest);
 
 image_Array = cell(1, numel(theFiles));
-hasPnemoniaTrain = zeros(1,numel(theFiles))';
+hasPnemoniaTest = zeros(1,numel(theFiles))';
 
 % Read each image
 for k = 1:numel(theFiles)
@@ -15,9 +15,9 @@ for k = 1:numel(theFiles)
 
     if (contains(baseFileName,"positive"))
         % fprintf(1, 'Now reading %s\n', fullFileName);
-        hasPnemoniaTrain(k) = 1;
+        hasPnemoniaTest(k) = 1;
     else
-        hasPnemoniaTrain(k) = 0;
+        hasPnemoniaTest(k) = 0;
     end
 
 end
@@ -32,10 +32,6 @@ for k = 1:numel(image_Array)
 
 end
 
-[Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , ...
-    "ObservationsIn","rows", ...
-    "Regularization",'ridge', ...
-    "Learner","logistic",...
-    'Lambda','auto');
+[label, score] = predict(Mdl, ALL_ARRAY');
 
 end

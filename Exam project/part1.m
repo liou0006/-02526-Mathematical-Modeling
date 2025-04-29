@@ -38,6 +38,4 @@ colorbar;
 title(titleOfBeta);
 saveas(gca,titleOfBeta,'png')
 
-
-
 clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
