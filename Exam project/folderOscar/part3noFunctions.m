@@ -1,7 +1,7 @@
 
 TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
-%
+
 
 if ~isfolder(TrainFolder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', TrainFolder);
@@ -16,12 +16,8 @@ end
 extracted_Trained = fullfile(TrainFolder, '*.png');
 theFiles = dir(extracted_Trained);
 
-Testing_photos = dir(fullfile(TestFolder,'*.png'));
-Testing_photos_name = {Testing_photos.name}';
-test_hasPne = contains(Testing_photos_name, "positive");
-test_pre_rawimage = fullfile({Testing_photos.folder}', Testing_photos_name);
-test_raw_image = cellfun(@imread, test_pre_rawimage, 'UniformOutput', false);
-
+test_hasPne = extract_posneg(TestFolder);
+test_raw_image = extract_photos_from_folder(TestFolder);
 
 if isempty(theFiles)
     error('No PNG files found in the selected folder.');
@@ -65,8 +61,6 @@ patchSize = 32;
 numPatches = (224 / patchSize)^2;
 featureLength = numPatches * numBins;
 ALL_ARRAY = zeros(featureLength, numel(image_cells_filtered));
-test_all_array = zeros(featureLength, numel(test_filter_image));
-
 
 for k = 1:numel(image_cells_filtered)
     featureVector = computeOrientationHistogram(image_cells_filtered{k}, patchSize, numBins);
@@ -76,9 +70,9 @@ end
 test_all_array = cellfun(@(img) (computeOrientationHistogram(img,patchSize, numBins)'), test_filter_image, UniformOutput=false);
 test_model_array = cell2mat(test_all_array');
 
-lambda = 0:.01:1;
 
 % Train Linear Classifier
+lambda = 0:.01:1;
 [Mdl, fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
@@ -94,12 +88,8 @@ testing(:,:,2) = repmat(test_hasPne, 1, size(label,2));
 % Evaluate
 testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
 
-% for k = size(testing,2)
-% correct = sum(testing(:,k,3))
-% percent = correct/size(testing,1)
-% end
 
-correct = sum(testing(:,:,3), 1);    % 1x11 vector of column sums
+correct = sum(testing(:,:,3), 1);
 percent = squeeze(correct) / size(testing,1);
 
 max(percent)
@@ -111,10 +101,24 @@ ylabel("Proportion the model predicted correct")
 
 
 
+% extracted_photos takes the folder path and spits out the raw image data
+% returns a cell with number of photos by 1. 
+% each cell is the photos pixels
+function extracted_photos = extract_photos_from_folder(folderpath)
+Testing_photos = dir(fullfile(folderpath,'*.png'));
+Testing_photos_name = {Testing_photos.name}';
+test_pre_rawimage = fullfile({Testing_photos.folder}', Testing_photos_name);
+extracted_photos = cellfun(@imread, test_pre_rawimage, 'UniformOutput', false);
+end
 
+% extracted_photos takes the folder path and spits out a matrix of 1 or 0
+% matrix is number of photos by 1
 
-
-
+function extracted_posneg = extract_posneg(folderpath)
+Testing_photos = dir(fullfile(folderpath,'*.png'));
+Testing_photos_name = {Testing_photos.name}';
+extracted_posneg = contains(Testing_photos_name, "positive");
+end
 
 
 % disp(sum(testing(:,:,3)));
