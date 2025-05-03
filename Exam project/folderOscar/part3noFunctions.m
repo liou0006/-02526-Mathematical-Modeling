@@ -1,5 +1,7 @@
-TrainFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Train";
-TestFolder = "C:\Users\oscar\OneDrive - Danmarks Tekniske Universitet\Skrivebord\Bachelor\Test";
+
+TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
+TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
+%
 
 if ~isfolder(TrainFolder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', TrainFolder);
@@ -89,24 +91,24 @@ function featureVector = computeOrientationHistogram(image, patchSize, numBins)
 theta(theta < 0) = theta(theta < 0) + 180;
 
 % After computing Gx, Gy, M, theta
-figure;
-
-subplot(2,2,1);
-imshow(image, []);
-title('Filtered Input Image');
-
-subplot(2,2,2);
-imshow(mat2gray(M)); % Magnitude visualization
-title('Gradient Magnitude');
-
-subplot(2,2,3);
-imshow(mat2gray(theta / 180)); % Orientation normalized to [0,1]
-title('Gradient Orientation');
-
-subplot(2,2,4);
-quiver(Gx, Gy);
-axis tight;
-title('Gradient Vectors');
+% figure;
+% 
+% subplot(2,2,1);
+% imshow(image, []);
+% title('Filtered Input Image');
+% 
+% subplot(2,2,2);
+% imshow(mat2gray(M)); % Magnitude visualization
+% title('Gradient Magnitude');
+% 
+% subplot(2,2,3);
+% imshow(mat2gray(theta / 180)); % Orientation normalized to [0,1]
+% title('Gradient Orientation');
+% 
+% subplot(2,2,4);
+% quiver(Gx, Gy);
+% axis tight;
+% title('Gradient Vectors');
 
 % Set up bin edges according to what was specified in the assignment
 % (numBins = 18)...
@@ -135,3 +137,4 @@ for row = 1:patchSize:size(image,1)
     end
 end
 end
+
