@@ -5,9 +5,8 @@
 TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
 
-[Mdl, Score] = fit(TrainFolder);
-[Label, Score, hasPnemoniaTest] = modelPredict(TestFolder, Mdl);
-
+[Mdl, fitinfo] = fitPart1(TrainFolder);
+[Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl);
 
 resultTable(:,1) = Label;
 resultTable(:,2) = hasPnemoniaTest;
@@ -27,17 +26,20 @@ disp(sum(resultTable(:,3)));
 fprintf('How many percentages of total image is true:')
 disp((sum(resultTable(:,3))/numel(hasPnemoniaTest))*100);
 
+PartNumber = 1;
+writeToTable(resultTable, PartNumber);
+
 Beta = Mdl.Beta;
 betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
+
+titleOfBeta = "Abs Value of learned weights image";
 
 h1 = figure;
 imshow(betaim, []);            
 colormap(gca);          
 colorbar;
-title('Absolute Value of Learned Weights image');
-saveas(gca,'Absolute Value of Learned Weights image','png')
-
-
+title(titleOfBeta);
+saveas(gca,titleOfBeta,'png')
 
 clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
