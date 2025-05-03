@@ -80,7 +80,7 @@ lambda = 0:.01:1;
 
 % Predict on Training Data
 [label, score] = predict(Mdl, test_model_array');
-testing = zeros(size(label,1), size(label,2), 3);  
+testing = zeros(size(label,1), size(label,2), 3);
 testing(:,:,1) = label;
 testing(:,:,2) = repmat(test_hasPne, 1, size(label,2));
 
@@ -92,13 +92,17 @@ testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
 correct = sum(testing(:,:,3), 1);
 percent = squeeze(correct) / size(testing,1);
 
-max(percent)
+max(percent) 
 
-plot(lambda, percent)
-xlabel("Lambda value")
-ylabel("Proportion the model predicted correct")
+plot_lambda_percent(lambda, percent)
 
 
+function plot_lambda_percent(lambda, percent)
+plot(lambda, percent) 
+xlabel("Lambda value") 
+ylabel("Proportion the model predicted correct") 
+title("Proportion of Pnemonia cases correctly ")
+end 
 
 
 % extracted_photos takes the folder path and spits out the raw image data
