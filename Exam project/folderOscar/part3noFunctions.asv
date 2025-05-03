@@ -76,17 +76,16 @@ end
 test_all_array = cellfun(@(img) (computeOrientationHistogram(img,patchSize, numBins)'), test_filter_image, UniformOutput=false);
 test_model_array = cell2mat(test_all_array');
 
-lambda = 0:.01:1;
+
 
 % Train Linear Classifier
 [Mdl, fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
-    "Lambda", lambda );
+    "Lambda", 0:.01:1 );
 
 % Predict on Training Data
 [label, score] = predict(Mdl, test_model_array');
-testing = zeros(size(label,1), size(label,2), 3);  
 testing(:,:,1) = label;
 testing(:,:,2) = repmat(test_hasPne, 1, size(label,2));
 
@@ -100,13 +99,12 @@ testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
 % end
 
 correct = sum(testing(:,:,3), 1);    % 1x11 vector of column sums
-percent = squeeze(correct) / size(testing,1);
+percent = squeeze(correct) / size(testing,1)
 
-max(percent)
 
-plot(lambda, percent)
-xlabel("Lambda value")
-ylabel("Proportion the model predicted correct")
+
+plot()
+
 
 
 
