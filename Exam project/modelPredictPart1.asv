@@ -38,11 +38,10 @@ test_pre_rawimage = fullfile({Testing_photos.folder}', Testing_photos_name);
 extracted_photos = cellfun(@imread, test_pre_rawimage, 'UniformOutput', false);
 end
 
-flattened_model_array = cellfun(@(img) (reshape(img, [], 1)), hasPnemoniaTest, "UniformOutput", false)
-test_model_array =    ;
+flat_extract = cell
+All_ARRAY = cell2mat(extracted_photos')
 
-
-% ALL_ARRAY = zeros(length(image_Array{1})^2,length(image_Array));
+ALL_ARRAY = zeros(length(image_Array{1})^2,length(image_Array));
 
 % creates cells with 1-column vectors
 for k = 1:numel(image_Array)
