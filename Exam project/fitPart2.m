@@ -1,14 +1,22 @@
 
-function [Mdl, fitinfo] = fitPart2(TrainFolder, lambda)
+function [Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda)
 
 hasPnemoniaTrain = extract_posneg(TrainFolder);
 extracted_photos = extract_photos_from_folder(TrainFolder);
-[extracted_xgradient, extract_ygradient] = cellfun(@(img) gradient(img, kernel), ...
+[ext_mag_gradient, ~] = cellfun(@(img) imgradient(img), ...
     extracted_photos, UniformOutput=false);
-magnitude_grad = norm(extracted_xgradient, extract_ygradient)
-ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_filtered);
+ALL_ARRAY = extracted_photos2ALL_ARRAY(ext_mag_gradient);
 
-[Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , ...
+
+% create normalized ALL_ARRAY
+mu = mean(ALL_ARRAY, 2);     % Mean for each feature (row-wise)
+sigma = std(ALL_ARRAY, 0, 2); % Std dev for each feature
+sigma(sigma == 0) = 1;       % Prevent division by zero
+
+% normalized ARRAY
+ALL_ARRAY_norm = (ALL_ARRAY - mu) ./ sigma;
+
+[Mdl,fitinfo] = fitclinear(ALL_ARRAY_norm', hasPnemoniaTrain , ...
     "ObservationsIn","rows", ...
     "Regularization",'ridge', ...
     "Lambda", lambda); 

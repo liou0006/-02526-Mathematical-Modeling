@@ -1,89 +1,68 @@
-
+clear percent titleOfBeta testing  lambda ; close all;
 TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
 % TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 % TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
 
-if ~isfolder(TrainFolder)
-    errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', TrainFolder);
-    uiwait(warndlg(errorMessage));
-    TrainFolder = uigetdir(); % Ask for a new one.
-    if TrainFolder == 0
-        % User clicked Cancel
-        return;
-    end
+over_max_percent_part2 = [];
+over_max_lambda_part2 = [];
+for k = 1:20
+
+lambda = linspace(00, 210, 150); % determine lambda
+[Mdl, fitinfo] = fitPart2(TrainFolder, lambda); % create the model
+[Label, Score, hasPnemoniaTest] = modelPredictPart2(TestFolder, Mdl); % test the model on test folder
+
+% create matrix to compare the prediction and actual result
+testing = zeros(size(Label, 1), size(Label, 2), 3);
+testing(:,:,1) = Label;
+testing(:,:,2) = repmat(hasPnemoniaTest, 1, size(Label, 2));
+% Evaluate 
+testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
+correct = sum(testing(:,:,3), 1); % determines how many the model got right
+percent = (correct) / size(testing,1); % what percent the model got right
+
+
+% locate which lambda achieves the best model
+[max_percent, max_id] = max(percent);
+max_lambda = lambda(max_id);
+over_max_percent{k} = max_percent;
+over_max_lambda{k} = max_lambda;
+
 end
 
-% Get all PNG files from the folder
-extracted_Trained = fullfile(TrainFolder, '*.png');
-theFiles = dir(extracted_Trained);
+avg_percent_part2 = mean(cell2mat(over_max_percent))
+avg_lambda_part2 = mean(cell2mat(over_max_lambda))
 
-% Check if there are any PNG files
-if isempty(theFiles)
-    error('No PNG files found in the selected folder.');
-end
+%{
 
-% Initialize a cell array to hold the images
-image_Array = cell(1, numel(theFiles));
-image_cells_filtered = cell(1,numel(theFiles));
-hasPnemoniaTrain = zeros(1,numel(theFiles))';
+% plot the data to graph the trend
+plot_lambda_percent(lambda, percent);
 
-kernel = fspecial("gaussian",4,.5); % creates kernel for filtering
-
-
-% Read each image
-for k = 1:numel(theFiles)
-
-    %creating and putting data in matrix cell
-    baseFileName = theFiles(k).name;
-    fullFileName = fullfile(theFiles(k).folder, baseFileName);
-    image_Array{k} = imread(fullFileName);
-
-    image_doub_Array = cellfun(@double, image_Array, UniformOutput=false);% converts to a double
-    
-    image_cells_filtered{k} = imfilter(image_doub_Array{k},kernel); %filters the data using guassian
-    
-    volume{k} = image_cells_filtered{k};
-
-
-
-
-    if (contains(baseFileName,"positive"))
-        % fprintf(1, 'Now reading %s\n', fullFileName);
-        hasPnemoniaTrain(k) = 1;
-    else
-        hasPnemoniaTrain(k) = 0;
-    end
-end
-volumeViewer(volume)
-
-ALL_ARRAY = zeros(length(image_cells_filtered{1})^2,length(image_cells_filtered));
-
-% creates cells with 1-column vectors
-for k = 1:numel(image_cells_filtered) 
-    image_cells_filtered{k} = reshape(image_cells_filtered{k},[],1);
-    ALL_ARRAY(:,k) = image_cells_filtered{k}; % compiles filtered images to 1 array
-end
-
-% creating and testing the model on the same data
-[Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , 'Learner', 'logistic' ,"ObservationsIn","rows","Regularization",'ridge' , 'Lambda','auto', Solver={'sgd','lbfgs'})
-[label, score] = predict(Mdl, ALL_ARRAY');
-testing(:,1) = label;
-testing(:,2) = hasPnemoniaTrain;
-
-for k = 1:numel(theFiles)
-    if testing(k,1) == testing(k,2)
-        testing(k,3) = 1;
-    else
-        testing(k,3) = 0;
-    end
-end
-
-disp(sum(testing(:,3)));
-disp((sum(testing(:,3))/numel(theFiles))*100);
-
+% display beta
 Beta = Mdl.Beta;
-Bias = Mdl.Bias;
+betaim = reshape(Beta, length(Beta)^.5, length(Beta)^.5, length(lambda));
+betaim = abs(betaim);
 
+titleOfBeta = "Abs Value of learned weights image";
+
+h1 = figure;
+ volumeViewer(betaim) % possible to view all of beta
+imshow(betaim(:, :, max_id), []);
+colormap(gca);          
+colorbar;
+title(titleOfBeta);
+saveas(gca,titleOfBeta,'png')
+
+%}
+
+
+% clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
+
+function plot_lambda_percent(lambda, percent)
+plot(lambda, percent) 
+xlabel("Lambda value") 
+ylabel("Proportion the model predicted correct") 
+title("Proportion of Pnemonia cases correctly")
+end 
 

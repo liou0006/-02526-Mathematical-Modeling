@@ -1,10 +1,15 @@
-function [label, score, hasPnemoniaTrain] = modelPredictPart2(TestFolder, Mdl)
+function [label, score, hasPnemoniaTest] = modelPredictPart2(TestFolder, Mdl, mu, sigma)
 
 hasPnemoniaTest = extract_posneg(TestFolder);
 extracted_photos = extract_photos_from_folder(TestFolder);
-ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos);
+[ext_mag_gradient, ~] = cellfun(@(img) imgradient(img), ...
+    extracted_photos, UniformOutput=false);
+ALL_ARRAY = extracted_photos2ALL_ARRAY(ext_mag_gradient);
 
-[label, score] = predict(Mdl, ALL_ARRAY');
+% create normalized ALL_ARRAY
+ALL_ARRAY_test_norm = (ALL_ARRAY - mu) ./ sigma;
+
+[label, score] = predict(Mdl, ALL_ARRAY_test_norm');
 
 end
 
