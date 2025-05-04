@@ -1,7 +1,5 @@
 function [Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder,lambda)
 
-
-
 hasPnemoniaTrain = extract_posneg(TrainFolder);
 extracted_photos = extract_photos_from_folder(TrainFolder);
 ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos);
@@ -9,8 +7,7 @@ ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos);
 [Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , ...
     "ObservationsIn","rows", ...
     "Regularization",'ridge', ...
-    "Learner","logistic",...
-    'Lambda', lambda);
+    "Lambda", lambda); 
 
 end
 

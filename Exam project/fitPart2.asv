@@ -3,9 +3,7 @@ function [Mdl, fitinfo] = fitPart2(TrainFolder, lambda)
 
 hasPnemoniaTrain = extract_posneg(TrainFolder);
 extracted_photos = extract_photos_from_folder(TrainFolder);
-[extracted_xgradient, extract_ygradient] = cellfun(@(img) gradient(img, kernel), ...
-    extracted_photos, UniformOutput=false);
-magnitude_grad = norm(extracted_xgradient, extract_ygradient)
+extracted_filtered = cellfun(@(img) imfilter()   extracted_photos
 ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_filtered);
 
 [Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , ...
