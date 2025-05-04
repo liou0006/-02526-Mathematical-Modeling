@@ -26,6 +26,12 @@ test_ARRAY_cell = cellfun(@(img) (computeOrientationHistogram(img, patchSize, nu
 test_ALL_ARRAY = cell2mat(test_ARRAY_cell');
 
 
+
+I = 10; % how many samples you want
+
+over_max_percent_part3 = [];
+over_max_lambda_part3 = [];
+for k = 1:I
 % Train Linear Classifier
 lambda = linspace(0, 1, 1000);
 [Mdl, fitinfo] = fitclinear(train_ALL_ARRAY', train_hasPne, ...
@@ -48,6 +54,20 @@ percent = (correct) / size(testing,1); % what percent the model got right
 % locate which lambda achieves the best model
 [max_percent, max_id] = max(percent);
 max_lambda = lambda(max_id);
+over_max_percent_part3{k} = max_percent;
+over_max_lambda_part3{k} = max_lambda;
+
+end
+
+avg_percent_part2 = mean(cell2mat(over_max_percent_part3))
+avg_lambda_part2 = mean(cell2mat(over_max_lambda_part3))
+
+
+
+
+
+
+
 
 % plot the data to graph the trend
 plot_lambda_percent(lambda, percent)

@@ -32,23 +32,11 @@ over_max_percent_part2{k} = max_percent;
 over_max_lambda_part2{k} = max_lambda;
 
 end
-
+% display average values 
 avg_percent_part2 = mean(cell2mat(over_max_percent_part2))
 avg_lambda_part2 = mean(cell2mat(over_max_lambda_part2))
 
 
-
-
-
-
-
-
-
-
-
-
-
-%{
 
 % plot the data to graph the trend
 plot_lambda_percent(lambda, percent);
@@ -67,7 +55,6 @@ colormap(gca);
 colorbar;
 title(titleOfBeta);
 saveas(gca,titleOfBeta,'png')
-%}
 
 
 % clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
