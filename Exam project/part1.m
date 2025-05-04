@@ -3,13 +3,16 @@
 TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
 
+I = 10; % how many samples you want
+
 
 over_max_percent_part1 = [];
 over_max_lambda_part1 = [];
-for k = 1:20
+for k = 1:I
 
-lambda = linspace(0, 1, 100); % determine lambda
-[Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, lambda); % create the model
+lambda = linspace(0, 10, 100); % determine lambda (can also use "logspace()")
+learner = "logistic"; % specify learner type to "logistic" or "svm"
+[Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, lambda, learner); % create the model
 [Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl); % test the model on test folder
 
 % create matrix to compare the prediction and actual result

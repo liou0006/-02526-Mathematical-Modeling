@@ -4,13 +4,15 @@ TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatic
 % TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 % TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
+I = 10; % how many samples you want
 
 over_max_percent_part2 = [];
 over_max_lambda_part2 = [];
-for k = 1:20
+for k = 1:I
 
-lambda = linspace(00, 210, 150); % determine lambda
-[Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda); % create the model
+lambda = linspace(00, 210, 150); % determine lambda (can also use "logspace()")
+learner = "logistic"; % specify learner type to "logistic" or "svm"
+[Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda, learner); % create the model
 [Label, Score, hasPnemoniaTest] = modelPredictPart2(TestFolder, Mdl, mu, sigma); % test the model on test folder
 
 % create matrix to compare the prediction and actual result
@@ -33,43 +35,6 @@ end
 
 avg_percent_part2 = mean(cell2mat(over_max_percent_part2))
 avg_lambda_part2 = mean(cell2mat(over_max_lambda_part2))
-
-
-
-
-
-
-
-
-
-over_max_percent_part1 = [];
-over_max_lambda_part1 = [];
-for k = 1:20
-
-lambda = linspace(0, 1, 100); % determine lambda
-[Mdl, fitinfo] = fitPart1(TrainFolder, lambda); % create the model
-[Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl); % test the model on test folder
-
-% create matrix to compare the prediction and actual result
-testing = zeros(size(Label, 1), size(Label, 2), 3);
-testing(:,:,1) = Label;
-testing(:,:,2) = repmat(hasPnemoniaTest, 1, size(Label, 2));
-% Evaluate 
-testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
-correct = sum(testing(:,:,3), 1); % determines how many the model got right
-percent = (correct) / size(testing,1); % what percent the model got right
-
-[max_percent, max_id] = max(percent);
-max_lambda = lambda(max_id);
-over_max_percent_part1{k} = max_percent;
-over_max_lambda_part1{k} = max_lambda;
-
-
-end
-
-avg_percent_part1 = mean(cell2mat(over_max_percent_part1))
-avg_lambda_part1 = mean(cell2mat(over_max_lambda_part1))
-
 
 
 
@@ -102,7 +67,6 @@ colormap(gca);
 colorbar;
 title(titleOfBeta);
 saveas(gca,titleOfBeta,'png')
-
 %}
 
 

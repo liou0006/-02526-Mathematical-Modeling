@@ -1,5 +1,5 @@
 
-function [Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda)
+function [Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda, learner)
 
 hasPnemoniaTrain = extract_posneg(TrainFolder);
 extracted_photos = extract_photos_from_folder(TrainFolder);
@@ -19,7 +19,8 @@ ALL_ARRAY_norm = (ALL_ARRAY - mu) ./ sigma;
 [Mdl,fitinfo] = fitclinear(ALL_ARRAY_norm', hasPnemoniaTrain , ...
     "ObservationsIn","rows", ...
     "Regularization",'ridge', ...
-    "Lambda", lambda); 
+    "Lambda", lambda, ...
+    "Learner", learner); 
 
 end
 
