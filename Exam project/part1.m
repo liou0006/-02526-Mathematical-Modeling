@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+%%
+>>>>>>> 8337aef47fe663e8957ceb866ec6a085e22bcd88
 % Specify the folder where the files live.
 % TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 % TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
@@ -8,41 +12,69 @@ TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektr
 TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
 
-[Mdl, fitinfo] = fitPart1(TrainFolder);
-[Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl);
+I = 10; % how many samples you want
 
-resultTable(:,1) = Label;
-resultTable(:,2) = hasPnemoniaTest;
-resultTable(:,4) = Score(:,1);
-resultTable(:,5) = Score(:,2);
 
-for k = 1:numel(hasPnemoniaTest)
-    if resultTable(k,1) == resultTable(k,2)
-        resultTable(k,3) = 1;
-    else
-        resultTable(k,3) = 0;
-    end
+over_max_percent_part1 = [];
+over_max_lambda_part1 = [];
+for k = 1:I
+
+lambda = linspace(0, 10, 100); % determine lambda (can also use "logspace()")
+learner = "logistic"; % specify learner type to "logistic" or "svm"
+[Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, lambda, learner); % create the model
+[Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl); % test the model on test folder
+
+% create matrix to compare the prediction and actual result
+testing = zeros(size(Label, 1), size(Label, 2), 3);
+testing(:,:,1) = Label;
+testing(:,:,2) = repmat(hasPnemoniaTest, 1, size(Label, 2));
+% Evaluate 
+testing(:,:,3) = testing(:,:,1) == testing(:,:,2);
+correct = sum(testing(:,:,3), 1); % determines how many the model got right
+percent = (correct) / size(testing,1); % what percent the model got right
+
+[max_percent, max_id] = max(percent);
+max_lambda = lambda(max_id);
+over_max_percent_part1{k} = max_percent;
+over_max_lambda_part1{k} = max_lambda;
+
+
 end
 
-fprintf('How many positive images:')
-disp(sum(resultTable(:,3)));
-fprintf('How many percentages of total image is true:')
-disp((sum(resultTable(:,3))/numel(hasPnemoniaTest))*100);
+avg_percent_part1 = mean(cell2mat(over_max_percent_part1))
+avg_lambda_part1 = mean(cell2mat(over_max_lambda_part1))
 
-PartNumber = 1;
-writeToTable(resultTable, PartNumber);
 
+
+
+
+% locate which lambda achieves the best model
+[max_percent, max_id] = max(percent);
+max_lambda = lambda(max_id);
+
+% plot the data to graph the trend
+plot_lambda_percent(lambda, percent);
+
+% display beta
 Beta = Mdl.Beta;
-betaim = reshape(Beta,224,224);
+betaim = reshape(Beta, length(Beta)^.5, length(Beta)^.5, length(lambda));
 betaim = abs(betaim);
 
-titleOfBeta = "Abs Value of learned weights image";
+titleOfBeta = "Abs Value of learned weights image Part 1";
 
 h1 = figure;
-imshow(betaim, []);            
+% volumeViewer(betaim) % possible to view all of beta
+imshow(betaim(:, :, max_id), []);
 colormap(gca);          
 colorbar;
 title(titleOfBeta);
 saveas(gca,titleOfBeta,'png')
 
-clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
+% clear filePatternTest filePatternTrain fullFileNameTest fullFileNameTrain baseFileNameTest baseFileNameTrain TestFolder TrainFolder
+
+function plot_lambda_percent(lambda, percent)
+plot(lambda, percent) 
+xlabel("Lambda value") 
+ylabel("Proportion the model predicted correct") 
+title("Proportion of Pnemonia cases correctly")
+end 
