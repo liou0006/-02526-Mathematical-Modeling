@@ -21,7 +21,7 @@ train_ARRAY_cell = cellfun(@(img) (computeOrientationHistogram(img, patchSize, n
     train_raw_image, UniformOutput=false);
 train_ALL_ARRAY = cell2mat(train_ARRAY_cell');
 
-test_ARRAY_cell = cellfun(@(img) (computeOrientationHistogram(img, patchSize, numBins))', ...
+[test_ARRAY_cell] = cellfun(@(img) (computeOrientationHistogram(img, patchSize, numBins))', ...
     test_raw_image, UniformOutput=false);
 test_ALL_ARRAY = cell2mat(test_ARRAY_cell');
 
@@ -33,7 +33,7 @@ over_max_percent_part3 = [];
 over_max_lambda_part3 = [];
 for k = 1:I
 % Train Linear Classifier
-lambda = linspace(0, 1, 100);
+lambda = linspace(0, .5, 100);
 [Mdl, fitinfo] = fitclinear(train_ALL_ARRAY', train_hasPne, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
@@ -66,9 +66,7 @@ avg_lambda_part3 = mean(cell2mat(over_max_lambda_part3))
 Beta = Mdl.Beta;
 betaim = reshape(Beta, numBins, numPatches, length(lambda));
 spatial_weight_map = mean(betaim , 1);            % Size: [1 × 49]
-spatial_map_2D = reshape(spatial_weight_map, 7, 7, length(lambda)); % Size: [7 × 7]
-
-
+spatial_map_2D = reshape(spatial_weight_map, 224 / patchSize, 224 / patchSize, length(lambda)); % Size: [7 × 7]
 
 normalized_map = spatial_map_2D(:,:,max_id) / max(abs(spatial_map_2D(:)));
 imagesc(normalized_map);
@@ -128,6 +126,9 @@ Testing_photos = dir(fullfile(folderpath,'*.png'));
 Testing_photos_name = {Testing_photos.name}';
 extracted_posneg = contains(Testing_photos_name, "positive");
 end
+
+
+
 
 %%%%%%%%%% Create a function to calculate
 function featureVector = computeOrientationHistogram(image, patchSize, numBins)
