@@ -4,13 +4,13 @@ TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatic
 % TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
 % TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
-I = 10; % how many samples you want
+I = 1; % how many samples you want
 
 over_max_percent_part2 = [];
 over_max_lambda_part2 = [];
 for k = 1:I
 
-lambda = linspace(00, 210, 150); % determine lambda (can also use "logspace()")
+lambda = linspace(23, 33, 10); % determine lambda (can also use "logspace()")
 learner = "logistic"; % specify learner type to "logistic" or "svm"
 [Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda, learner); % create the model
 [Label, Score, hasPnemoniaTest] = modelPredictPart2(TestFolder, Mdl, mu, sigma); % test the model on test folder
@@ -46,10 +46,10 @@ Beta = Mdl.Beta;
 betaim = reshape(Beta, length(Beta)^.5, length(Beta)^.5, length(lambda));
 betaim = abs(betaim);
 
-titleOfBeta = "Abs Value of learned weights image";
+titleOfBeta = "Abs Value of learned weights image Part 2";
 
-h1 = figure;
- volumeViewer(betaim) % possible to view all of beta
+h1 = figure();
+% volumeViewer(betaim) % possible to view all of beta
 imshow(betaim(:, :, max_id), []);
 colormap(gca);          
 colorbar;

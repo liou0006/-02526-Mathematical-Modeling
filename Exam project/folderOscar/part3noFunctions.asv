@@ -27,7 +27,7 @@ test_ALL_ARRAY = cell2mat(test_ARRAY_cell');
 
 
 
-I = 10; % how many samples you want
+I = 1; % how many samples you want
 
 over_max_percent_part3 = [];
 over_max_lambda_part3 = [];
@@ -59,12 +59,14 @@ over_max_lambda_part3{k} = max_lambda;
 
 end
 
-avg_percent_part3 = mean(cell2mat(over_max_percent_part3))
-avg_lambda_part3 = mean(cell2mat(over_max_lambda_part3))
+avg_percent_part2 = mean(cell2mat(over_max_percent_part3))
+avg_lambda_part2 = mean(cell2mat(over_max_lambda_part3))
 
 % display beta
 Beta = Mdl.Beta;
 betaim = reshape(Beta, numBins, numPatches, length(lambda));
+
+
 spatial_weight_map = mean(betaim , 1);            % Size: [1 × 49]
 spatial_map_2D = reshape(spatial_weight_map, 7, 7, length(lambda)); % Size: [7 × 7]
 
