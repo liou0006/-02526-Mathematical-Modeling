@@ -1,4 +1,4 @@
-function [Mdl, fitinfo] = fitPart1(TrainFolder)
+function [Mdl, fitinfo] = fitPart1(TrainFolder,lambda)
 
 filePatternTest = fullfile(TrainFolder, '*.png');
 theFiles = dir(filePatternTest);
@@ -36,6 +36,6 @@ end
     "ObservationsIn","rows", ...
     "Regularization",'ridge', ...
     "Learner","logistic",...
-    'Lambda','auto');
+    'Lambda',lambda);
 
 end
