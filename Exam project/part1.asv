@@ -9,13 +9,13 @@ lambdaSize = numel(lambdas);
 accuracy = zeros(lambdaSize,1);      % store percent correct for each lambda
 allRestuls = cell(lambdaSize,1);
 
-for i = 1:lambdaSize
-    lambda = lambdas(i);
+% for i = 1:lambdaSize
+%     lambda = lambdas(i);
 
-    [Mdl, fitinfo] = fitPart1(TrainFolder,lambda);
+    [Mdl, fitinfo] = fitPart1(TrainFolder,lambdas);
     [Label, Score, hasPnemoniaTest] = modelPredictPart1(TestFolder, Mdl);
 
-    N = numel(hasPnemoniaTest);
+        N = numel(hasPnemoniaTest);
     resultTable = zeros(N,5);
     resultTable(:,1) = Label;
     resultTable(:,2) = hasPnemoniaTest;
@@ -25,7 +25,7 @@ for i = 1:lambdaSize
     accuracy(i) = mean(resultTable(:,3));
     allResults{i} = resultTable;
 
-end
+% end
 
 [bestAcc, bestIdx] = max(accuracy);
 bestLambda = lambdas(bestIdx);
@@ -40,10 +40,11 @@ title('Test‐set accuracy vs. \lambda')
 grid on
 
 
+
 PartNumber = 1;
 writeToTable(resultTable, PartNumber);
 
-[Mdl, fitinfo] = fitPart1(TrainFolder,bestLambda);
+ [Mdl, fitinfo] = fitPart1(TrainFolder,bestLambda);
 Beta = Mdl.Beta;
 betaim = reshape(Beta,224,224);
 betaim = abs(betaim);
