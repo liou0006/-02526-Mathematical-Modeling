@@ -1,41 +1,29 @@
-function [Mdl, fitinfo] = fitPart1(TrainFolder,lambda)
+function [Mdl, fitinfo] = fitPart1(TrainFolder, lambda)
+  persistent cachedTrainFolder ALL_TRAIN hasPnemoniaTrain
+  if isempty(cachedTrainFolder) || ~strcmp(cachedTrainFolder, TrainFolder)
+    % Load & vectorize only once per folder
+    filePattern        = fullfile(TrainFolder, '*.png');
+    theFiles           = dir(filePattern);
+    DataSize           = numel(theFiles);
+    tmp                = imread(fullfile(theFiles(1).folder,theFiles(1).name));
+    imageSize          = numel(tmp(:));
 
-filePatternTest = fullfile(TrainFolder, '*.png');
-theFiles = dir(filePatternTest);
-
-image_Array = cell(1, numel(theFiles));
-hasPnemoniaTrain = zeros(1,numel(theFiles))';
-
-% Read each image
-for k = 1:numel(theFiles)
-
-    baseFileName = theFiles(k).name;
-    fullFileName = fullfile(theFiles(k).folder, baseFileName);
-    image_Array{k} = imread(fullFileName);
-
-    if (contains(baseFileName,"positive"))
-        % fprintf(1, 'Now reading %s\n', fullFileName);
-        hasPnemoniaTrain(k) = 1;
-    else
-        hasPnemoniaTrain(k) = 0;
+    ALL_TRAIN          = zeros(DataSize, imageSize);
+    hasPnemoniaTrain   = zeros(DataSize,1);
+    for k = 1:DataSize
+      baseFileName              = theFiles(k).name;
+      fullFileName              = fullfile(theFiles(k).folder, baseFileName);
+      I                         = imread(fullFileName);
+      ALL_TRAIN(k,:)            = reshape(I,1,[]);
+      hasPnemoniaTrain(k)       = contains(baseFileName, 'positive');
     end
+    cachedTrainFolder = TrainFolder;
+  end
 
-end
-
-ALL_ARRAY = zeros(length(image_Array{1})^2,length(image_Array));
-
-% creates cells with 1-column vectors
-for k = 1:numel(image_Array)
-
-    image_Array{k} = reshape(image_Array{k},[],1);
-    ALL_ARRAY(:,k) = image_Array{k};
-
-end
-
-[Mdl,fitinfo] = fitclinear(ALL_ARRAY', hasPnemoniaTrain , ...
-    "ObservationsIn","rows", ...
-    "Regularization",'ridge', ...
-    "Learner","logistic",...
-    'Lambda',lambda);
-
+  % Train model
+  [Mdl, fitinfo] = fitclinear(ALL_TRAIN, hasPnemoniaTrain, ...
+      'ObservationsIn','rows', ...
+      'Regularization','ridge', ...
+      'Learner','logistic', ...
+      'Lambda', lambda);
 end

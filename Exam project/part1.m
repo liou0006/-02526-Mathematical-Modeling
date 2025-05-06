@@ -2,15 +2,18 @@
 
 %%
 % Specify the folder where the files live.
-TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
-TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
+
+clc, clear, close all;
+TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
+TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
 
 lambdas = linspace(0,10,100);      % the grid of lambda values to try
-nLambdas = numel(lambdas);
-accuracy = zeros(nLambdas,1);      % store percent correct for each lambda
+lambdaSize = numel(lambdas);
+accuracy = zeros(lambdaSize,1);      % store percent correct for each lambda
+allRestuls = cell(lambdaSize,1);
 
-for i = 1:nLambdas
+for i = 1:lambdaSize
     lambda = lambdas(i);
 
     [Mdl, fitinfo] = fitPart1(TrainFolder,lambda);
@@ -23,11 +26,7 @@ for i = 1:nLambdas
     resultTable(:,3) = (Label == hasPnemoniaTest);
     resultTable(:,4) = Score(:,1);
     resultTable(:,5) = Score(:,2);
-
-
     accuracy(i) = mean(resultTable(:,3));
-
-    % (optional) store or save resultTable for later inspection
     allResults{i} = resultTable;
 
 end
@@ -35,10 +34,8 @@ end
 [bestAcc, bestIdx] = max(accuracy);
 bestLambda = lambdas(bestIdx);
 fprintf('Best λ = %.3f → accuracy = %.2f%%\n', bestLambda, bestAcc*100);
-
-% Overall average accuracy across all λ
 fprintf('Mean accuracy over all λ: %.2f%%\n', mean(accuracy)*100);
-
+%%
 figure;
 plot(lambdas, accuracy*100, 'LineWidth',1.5)
 xlabel('Regularization \lambda')
@@ -46,7 +43,7 @@ ylabel('Accuracy (%)')
 title('Test‐set accuracy vs. \lambda')
 grid on
 
-
+%%
 
 PartNumber = 1;
 writeToTable(resultTable, PartNumber);
