@@ -9,7 +9,6 @@ ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos);
     "Regularization",'ridge', ...
     "Lambda", lambda, ...
     "Learner", learner);  
-
 end
 
 
