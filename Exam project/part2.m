@@ -1,17 +1,16 @@
 clear percent titleOfBeta testing  lambda ; close all;
 TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
 TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
-% TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
-% TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
 
-I = 1; % how many samples you want
+
+I = 10; % how many samples you want
 
 over_max_percent_part2 = [];
 over_max_lambda_part2 = [];
 for k = 1:I
 
-lambda = linspace(23, 33, 10); % determine lambda (can also use "logspace()")
-learner = "logistic"; % specify learner type to "logistic" or "svm"
+lambda = logspace(-2, 3, 100); % determine lambda (can also use "logspace()")
+learner = "logistic"; % specify learner type   to "logistic" or "svm"
 [Mdl, fitinfo, mu, sigma] = fitPart2(TrainFolder, lambda, learner); % create the model
 [Label, Score, hasPnemoniaTest] = modelPredictPart2(TestFolder, Mdl, mu, sigma); % test the model on test folder
 
@@ -36,8 +35,6 @@ end
 avg_percent_part2 = mean(cell2mat(over_max_percent_part2))
 avg_lambda_part2 = mean(cell2mat(over_max_lambda_part2))
 
-
-
 % plot the data to graph the trend
 plot_lambda_percent(lambda, percent);
 
@@ -46,7 +43,7 @@ Beta = Mdl.Beta;
 betaim = reshape(Beta, length(Beta)^.5, length(Beta)^.5, length(lambda));
 betaim = abs(betaim);
 
-titleOfBeta = "Abs Value of learned weights image Part 2";
+titleOfBeta = "Display of the learned weights from gradient model";
 
 h1 = figure();
 % volumeViewer(betaim) % possible to view all of beta
@@ -63,6 +60,6 @@ function plot_lambda_percent(lambda, percent)
 plot(lambda, percent) 
 xlabel("Lambda value") 
 ylabel("Proportion the model predicted correct") 
-title("Proportion of Pnemonia cases correctly")
+title("Part 2: Proportion of Pnemonia cases predicted correctly")
 end 
 

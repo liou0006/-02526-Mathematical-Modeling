@@ -1,20 +1,20 @@
-% TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
-% TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
-
-clc, clear,close all;
-
-TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
-TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
+clear,close all;
 
 
-I = 1; % how many samples you want
+TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
+TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
+
+% TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
+% TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
+
+
+I = 10; % how many samples you want
 over_max_percent_part1 = cell(I,1);
 over_max_lambda_part1 = cell(I,1);
 
 for k = 1:I
-    % lambda = linspace(0, 10, 100); % determine lambda (can also use "logspace()")
-
-    lambda = [0.01, 0.1, 1, 10];
+    lambda = logspace(-2, 6, 100); % determine lambda (can also use "logspace()")
+    % lambda = [0.01, 0.1, 1, 10];
     learner = "logistic"; % specify learner type to "logistic" or "svm"
 
     [Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, lambda, learner); % create the model
@@ -46,7 +46,7 @@ max_lambda = lambda(max_id);
 plot_lambda_percent(lambda, percent);
 
 % display beta for the best lambda value
-% [Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, max_lambda, learner);
+%[Mdl, fitinfo, ALL_ARRAY] = fitPart1(TrainFolder, max_lambda, learner);
 Beta = Mdl.Beta;
 betaim = reshape(Beta, length(Beta)^.5, length(Beta)^.5, length(lambda));
 betaim = abs(betaim);
@@ -67,5 +67,5 @@ function plot_lambda_percent(lambda, percent)
 plot(lambda, percent)
 xlabel("Lambda value")
 ylabel("Proportion the model predicted correct")
-title("Proportion of Pnemonia cases correctly")
+title("Part 1: Proportion of Pnemonia cases predicted correctly")
 end

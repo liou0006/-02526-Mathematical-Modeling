@@ -21,23 +21,24 @@ train_ARRAY_cell = cellfun(@(img) (computeOrientationHistogram(img, patchSize, n
     train_raw_image, UniformOutput=false);
 train_ALL_ARRAY = cell2mat(train_ARRAY_cell');
 
-test_ARRAY_cell = cellfun(@(img) (computeOrientationHistogram(img, patchSize, numBins))', ...
+[test_ARRAY_cell] = cellfun(@(img) (computeOrientationHistogram(img, patchSize, numBins))', ...
     test_raw_image, UniformOutput=false);
 test_ALL_ARRAY = cell2mat(test_ARRAY_cell');
 
 
 
-I = 1; % how many samples you want
+I = 10; % how many samples you want
 
 over_max_percent_part3 = [];
 over_max_lambda_part3 = [];
 for k = 1:I
 % Train Linear Classifier
-lambda = linspace(0, 1, 100);
+lambda = logspace(-2,1,500);
 [Mdl, fitinfo] = fitclinear(train_ALL_ARRAY', train_hasPne, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
-    "Lambda", lambda );
+    "Lambda", lambda, ...
+    "Learner","logistic");
 
 % Predict on Training Data
 [Label, score] = predict(Mdl, test_ALL_ARRAY');
@@ -59,53 +60,20 @@ over_max_lambda_part3{k} = max_lambda;
 
 end
 
-avg_percent_part2 = mean(cell2mat(over_max_percent_part3))
-avg_lambda_part2 = mean(cell2mat(over_max_lambda_part3))
+avg_percent_part3 = mean(cell2mat(over_max_percent_part3))
+avg_lambda_part3 = mean(cell2mat(over_max_lambda_part3))
 
 % display beta
 Beta = Mdl.Beta;
 betaim = reshape(Beta, numBins, numPatches, length(lambda));
-
-
 spatial_weight_map = mean(betaim , 1);            % Size: [1 × 49]
-spatial_map_2D = reshape(spatial_weight_map, 7, 7, length(lambda)); % Size: [7 × 7]
-
-
+spatial_map_2D = reshape(spatial_weight_map, 224 / patchSize, 224 / patchSize, length(lambda)); % Size: [7 × 7]
 
 normalized_map = spatial_map_2D(:,:,max_id) / max(abs(spatial_map_2D(:)));
 imagesc(normalized_map);
 colorbar;
 title("Patch-wise β Magnitude");
-%disp([min(spatial_map_2D(:)), max(spatial_map_2D(:))]);
 
-
-% 
-% betaim = abs(betaim);
-% 
-% titleOfBeta = "Abs Value of learned weights image Part 3";
-% 
-% h1 = figure;
-% % volumeViewer(betaim) % possible to view all of beta
-% imshow(betaim(:, :, max_id), []);
-% colormap(gca);          
-% colorbar;
-% title(titleOfBeta);
-% saveas(gca,titleOfBeta,'png')
-
-
-
-
-
-% plot the data to graph the trend
-% plot_lambda_percent(lambda, percent)
-
-%%%%%%%%%% plots the percent vs lambda values
-function plot_lambda_percent(lambda, percent)
-plot(lambda, percent) 
-xlabel("Lambda value") 
-ylabel("Proportion the model predicted correct") 
-title("Proportion of Pnemonia cases correctly")
-end 
 
 %%%%%%%%%% turns the extracted_photos to a (elements in photo x num of photos matrix)
 function ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos)
@@ -131,13 +99,14 @@ Testing_photos_name = {Testing_photos.name}';
 extracted_posneg = contains(Testing_photos_name, "positive");
 end
 
+
 %%%%%%%%%% Create a function to calculate
-function featureVector = computeOrientationHistogram(image, patchSize, numBins)
+function [featureVector,histVals] = computeOrientationHistogram(image, patchSize, numBins)
 % Find magnitude and direction
 [M, theta] = imgradient(image);
 
 % Make sure that direction is between 0 and 180 deg.
-theta(theta < 0) = theta(theta < 0) + 180;
+%theta(theta < 0) = theta(theta < 0) + 180;
 
 % After computing Gx, Gy, M, theta
 % figure;
@@ -161,13 +130,15 @@ theta(theta < 0) = theta(theta < 0) + 180;
 
 % Set up bin edges according to what was specified in the assignment
 % (numBins = 18)...
-binEdges = linspace(0, 180, numBins + 1);
+binEdges = linspace(-180, 180, numBins + 1);
 featureVector = [];
 
 for row = 1:patchSize:size(image,1)
     for col = 1:patchSize:size(image,2)
-        rowEnd = min(row + patchSize - 1, size(image,1));
-        colEnd = min(col + patchSize - 1, size(image,2));
+
+        rowEnd = (row + patchSize - 1);
+        colEnd = (col + patchSize - 1);
+
         patchTheta = theta(row:rowEnd, col:colEnd);
         patchMag = M(row:rowEnd, col:colEnd);
 
@@ -181,7 +152,6 @@ for row = 1:patchSize:size(image,1)
         if norm(histVals) > 0
             histVals = histVals / norm(histVals);
         end
-
         featureVector = [featureVector, histVals];
     end
 end

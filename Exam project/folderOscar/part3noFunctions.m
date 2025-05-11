@@ -1,9 +1,6 @@
 
-% TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
-% TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
-
-TrainFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Train";
-TestFolder = "C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\C. Elektroteknologi - Bachelor\6. semester\02526 Mathematical Modeling\-02526-Mathematical-Modeling\Exam project\data\Test";
+TrainFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Train";
+TestFolder = "C:\Users\edwar\OneDrive\Documents\TAMU files\spring 2025\mathmatical models\Final Exam\Test";
 
 % extracting data from folders
 train_hasPne = extract_posneg(TrainFolder);
@@ -36,11 +33,12 @@ over_max_percent_part3 = [];
 over_max_lambda_part3 = [];
 for k = 1:I
 % Train Linear Classifier
-lambda = linspace(0, .5, 100);
+lambda = logspace(-2,1,500);
 [Mdl, fitinfo] = fitclinear(train_ALL_ARRAY', train_hasPne, ...
     "ObservationsIn", "rows", ...
     "Regularization", "ridge", ...
-    "Lambda", lambda );
+    "Lambda", lambda, ...
+    "Learner","logistic");
 
 % Predict on Training Data
 [Label, score] = predict(Mdl, test_ALL_ARRAY');
@@ -75,36 +73,7 @@ normalized_map = spatial_map_2D(:,:,max_id) / max(abs(spatial_map_2D(:)));
 imagesc(normalized_map);
 colorbar;
 title("Patch-wise β Magnitude");
-%disp([min(spatial_map_2D(:)), max(spatial_map_2D(:))]);
 
-
-% 
-% betaim = abs(betaim);
-% 
-% titleOfBeta = "Abs Value of learned weights image Part 3";
-% 
-% h1 = figure;
-% % volumeViewer(betaim) % possible to view all of beta
-% imshow(betaim(:, :, max_id), []);
-% colormap(gca);          
-% colorbar;
-% title(titleOfBeta);
-% saveas(gca,titleOfBeta,'png')
-
-
-
-
-
-% plot the data to graph the trend
-% plot_lambda_percent(lambda, percent)
-
-%%%%%%%%%% plots the percent vs lambda values
-function plot_lambda_percent(lambda, percent)
-plot(lambda, percent) 
-xlabel("Lambda value") 
-ylabel("Proportion the model predicted correct") 
-title("Proportion of Pnemonia cases correctly")
-end 
 
 %%%%%%%%%% turns the extracted_photos to a (elements in photo x num of photos matrix)
 function ALL_ARRAY = extracted_photos2ALL_ARRAY(extracted_photos)
@@ -131,45 +100,26 @@ extracted_posneg = contains(Testing_photos_name, "positive");
 end
 
 
-
-
 %%%%%%%%%% Create a function to calculate
-function featureVector = computeOrientationHistogram(image, patchSize, numBins)
+function [featureVector,histVals] = computeOrientationHistogram(image, patchSize, numBins)
 % Find magnitude and direction
 [M, theta] = imgradient(image);
 
 % Make sure that direction is between 0 and 180 deg.
-theta(theta < 0) = theta(theta < 0) + 180;
-
-% After computing Gx, Gy, M, theta
-% figure;
-%
-% subplot(2,2,1);
-% imshow(image, []);
-% title('Filtered Input Image');
-%
-% subplot(2,2,2);
-% imshow(mat2gray(M)); % Magnitude visualization
-% title('Gradient Magnitude');
-%
-% subplot(2,2,3);
-% imshow(mat2gray(theta / 180)); % Orientation normalized to [0,1]
-% title('Gradient Orientation');
-%
-% subplot(2,2,4);
-% quiver(Gx, Gy);
-% axis tight;
-% title('Gradient Vectors');
+% theta(theta < 0) = theta(theta < 0) + 180;
 
 % Set up bin edges according to what was specified in the assignment
 % (numBins = 18)...
-binEdges = linspace(0, 180, numBins + 1);
+binEdges = linspace(-180, 180, numBins + 1);
 featureVector = [];
 
 for row = 1:patchSize:size(image,1)
     for col = 1:patchSize:size(image,2)
-        rowEnd = min(row + patchSize - 1, size(image,1));
-        colEnd = min(col + patchSize - 1, size(image,2));
+        %rowEnd = min(row + patchSize - 1, size(image,1));
+        %colEnd = min(col + patchSize - 1, size(image,2));
+        rowEnd = (row + patchSize - 1);
+        colEnd = (col + patchSize - 1);
+
         patchTheta = theta(row:rowEnd, col:colEnd);
         patchMag = M(row:rowEnd, col:colEnd);
 
@@ -183,7 +133,6 @@ for row = 1:patchSize:size(image,1)
         if norm(histVals) > 0
             histVals = histVals / norm(histVals);
         end
-
         featureVector = [featureVector, histVals];
     end
 end
